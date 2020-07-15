@@ -1,4 +1,10 @@
-import { processText, pathifyJSON } from '../src';
+import { processText, pathifyJSON, normalizeValue } from '../src';
+
+test('Test normalizeValue with strings', () => {
+    expect(normalizeValue('test')).toBe('test');
+    expect(normalizeValue('1')).toBe(1);
+    expect(normalizeValue('1')).toBe(1);
+});
 
 test('Process returns identical string', () => {
     const s = 'asdfjkl;';
@@ -134,7 +140,7 @@ test('Pathify grabs tables correctly, complex example.', () => {
     };
 
     const blob = pathifyJSON(document);
-    console.log(JSON.stringify(blob, null, 2));
+    //console.log(JSON.stringify(blob, null, 2));
 
     expect(blob.values['customer.address.city']).toBe('Ottawa');
     expect(blob.values['business.brews']).toStrictEqual([
@@ -142,5 +148,5 @@ test('Pathify grabs tables correctly, complex example.', () => {
         'house ale',
         'saskatchewan fog',
     ]);
-    expect(blob.tables['items'][0]['id.value']).toBe('1');
+    expect(blob.tables['items'][0]['id.value']).toBe(1);
 });

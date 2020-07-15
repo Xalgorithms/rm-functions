@@ -98,5 +98,14 @@ export function prettyJSON(x) {
  * @param {Object} val A String or Number
  */
 export function normalizeValue(val) {
+    // Float?
+    const float = parseFloat(val);
+    if (!isNaN(float)) return float;
+
+    // Int?
+    const int = parseInt(val);
+    if (!isNaN(int)) return int;
+
+    // String.
     return val;
 }
