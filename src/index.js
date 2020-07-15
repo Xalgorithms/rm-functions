@@ -20,7 +20,7 @@ export function pathifyJSON(document) {
     return _pathifyJSON_Base(document, false);
 }
 
-export function pathifyTableRow(document) {
+function pathifyTableRow(document) {
     return _pathifyJSON_Base(document, true);
 }
 
@@ -62,13 +62,20 @@ function _recurseAndAdd(key, path, value, blob) {
             _recurseAndAdd(inner_key, newPath, inner_value, blob);
         });
     } else if (isArray(value)) {
-        const newArr = [];
-        for (const tableEntry in value) {
-            newArr.push(pathifyTableRow(value[tableEntry]));
+        const tableObjects = [];
+        const arrayValues = [];
+        for (const arrayElementIndex in value) {
+            const element = value[arrayElementIndex];
+            if (isObject(element)) {
+                tableObjects.push(pathifyTableRow(element));
+            } else if (isValue(element)) {
+                arrayValues.push(normalizeValue(element));
+            }
         }
-        blob.tables[valuePath] = newArr;
+        if (tableObjects.length > 0) blob.tables[valuePath] = tableObjects;
+        if (arrayValues.length > 0) blob.values[valuePath] = arrayValues;
     } else if (isValue(value)) {
-        blob.values[valuePath] = value;
+        blob.values[valuePath] = normalizeValue(value);
     } else {
         console.error(`Unexpected object configuration found. Object:\n\n${prettyJSON(value)}`);
     }
@@ -84,4 +91,12 @@ function _recurseAndAdd(key, path, value, blob) {
  */
 export function prettyJSON(x) {
     return JSON.stringify(x, null, 2);
+}
+
+/**
+ * Ensure numbers are stored in the proccesed JSON as numbers.
+ * @param {Object} val A String or Number
+ */
+export function normalizeValue(val) {
+    return val;
 }

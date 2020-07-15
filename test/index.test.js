@@ -61,7 +61,15 @@ test('Pathify grabs tables correctly, simple example.', () => {
 test('Pathify grabs tables correctly, complex example.', () => {
     const document = {
         id: '38936c5e',
-        business: 'breweries.canada.ottawa.britannia',
+        business: {
+            id: 'breweries.canada.ottawa.britannia',
+            address: {
+                street: 'Lager St',
+                number: '19',
+                city: 'Ottawa',
+            },
+            brews: ['house lager', 'house ale', 'saskatchewan fog'],
+        },
         customer: {
             id: '72cb5602',
             address: {
@@ -129,5 +137,10 @@ test('Pathify grabs tables correctly, complex example.', () => {
     console.log(JSON.stringify(blob, null, 2));
 
     expect(blob.values['customer.address.city']).toBe('Ottawa');
+    expect(blob.values['business.brews']).toStrictEqual([
+        'house lager',
+        'house ale',
+        'saskatchewan fog',
+    ]);
     expect(blob.tables['items'][0]['id.value']).toBe('1');
 });
