@@ -21,6 +21,7 @@
     "author": "Ryan Fleck",
     "license": "ISC",
     "dependencies": {
+        "babel-jest": "^26.1.0",
         "chalk": "^4.0.0"
     },
     "devDependencies": {
