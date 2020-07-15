@@ -37,3 +37,97 @@ test('Pathify sets multiple variables correctly.', () => {
     expect(blob.values['a.b.d']).toBe(document.a.b.c);
     expect(blob.values['a.b.e']).toBe(document.a.b.c);
 });
+
+test('Pathify grabs tables correctly, simple example.', () => {
+    const document = {
+        Table: {
+            Metadata: {
+                path: 'gov.sg.iras.rules.absd.tables',
+            },
+            Data: [
+                { a: 1, b: 2 },
+                { a: 2, b: 4 },
+                { a: 3, b: 6 },
+            ],
+        },
+    };
+
+    const blob = pathifyJSON(document);
+
+    expect(blob.values['Table.Metadata.path']).toStrictEqual(document.Table.Metadata.path);
+    expect(blob.tables['Table.Data']).toStrictEqual(document.Table.Data);
+});
+
+test('Pathify grabs tables correctly, complex example.', () => {
+    const document = {
+        id: '38936c5e',
+        business: 'breweries.canada.ottawa.britannia',
+        customer: {
+            id: '72cb5602',
+            address: {
+                street: 'Main St',
+                number: '12',
+                city: 'Ottawa',
+                subentity: {
+                    name: 'Ontario',
+                    code: {
+                        value: 'CA-ON',
+                        list_id: 'ISO 3116-2',
+                        list_name: 'Country Subentity',
+                        version_id: '20010914',
+                    },
+                },
+            },
+        },
+        items: [
+            {
+                id: {
+                    value: '1',
+                    list_id: 'britannia-stock-ids',
+                },
+                description: 'The MSB (6)',
+                quantity: {
+                    value: 6,
+                    unit: 'can',
+                },
+                pricing: {
+                    price: {
+                        value: '5.76',
+                        currency_code: 'CAD',
+                    },
+                    quantity: {
+                        value: 1,
+                        unit: 'can',
+                    },
+                },
+            },
+            {
+                id: {
+                    value: '3',
+                    list_id: 'britannia-stock-ids',
+                },
+                description: 'Eternally Hoptimistic (12)',
+                quantity: {
+                    value: 12,
+                    unit: 'can',
+                },
+                pricing: {
+                    price: {
+                        value: '4.87',
+                        currency_code: 'CAD',
+                    },
+                    quantity: {
+                        value: 1,
+                        unit: 'can',
+                    },
+                },
+            },
+        ],
+    };
+
+    const blob = pathifyJSON(document);
+    console.log(JSON.stringify(blob, null, 2));
+
+    expect(blob.values['customer.address.city']).toBe('Ottawa');
+    expect(blob.tables['items'][0]['id.value']).toBe('1');
+});

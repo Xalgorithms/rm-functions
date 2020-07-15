@@ -5,6 +5,20 @@
 
 ## Purpose
 
+A library with utilities for processing blobs of input data and running the
+input data against rule blobs.
+
+## Progress
+
+### ToDo
+
+1. Function for deep-diving into objects and ensuring everything can boil down
+   to dotpaths.
+
+### Done
+
+1. Stuff.
+
 ## Usage
 
 ### In Programs

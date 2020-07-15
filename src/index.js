@@ -1,10 +1,6 @@
 //export * from './utils';
 
-const XA_TYPES = {
-    OBJECT: 'object',
-    ARRAY: 'array',
-    VALUE: 'value',
-};
+import { isObject, isArray, isValue, isTable } from './types.js';
 
 /**
  * Tests the
@@ -21,15 +17,28 @@ export function processText(stringx) {
  * @returns {Object} Restructured version of the original document
  */
 export function pathifyJSON(document) {
+    return _pathifyJSON_Base(document, false);
+}
+
+export function pathifyTableRow(document) {
+    return _pathifyJSON_Base(document, true);
+}
+
+function _pathifyJSON_Base(document, table = false) {
     const newBlob = { values: {}, tables: {} };
     const path = [];
 
     if (typeof document !== 'object') {
-        console.error('Document is not valid.');
+        console.error(`Document is not valid:\n${document}`);
         return false;
     }
 
     _recurseAndAdd(null, path, document, newBlob);
+
+    if (table === true && Object.keys(newBlob.tables).length > 0)
+        throw 'Table rows include tables.';
+
+    if (table === true) return newBlob.values;
     return newBlob;
 }
 
@@ -44,30 +53,24 @@ export function pathifyJSON(document) {
  * @param {Object} blob The returned object of the parent function
  */
 function _recurseAndAdd(key, path, value, blob) {
+    const valuePath = path.join('.');
     if (isObject(value)) {
+        if (Object.keys(value).length === 0) return;
         Object.entries(value).forEach(([inner_key, inner_value]) => {
             const newPath = path.slice();
             newPath.push(inner_key);
             _recurseAndAdd(inner_key, newPath, inner_value, blob);
         });
-        return;
-    } else if (isArray(value) && value.every(isValue)) {
-        const valuePath = path.join('.');
-        blob.values[valuePath] = value;
-        return;
-    } else if (isArray(value) && value.every(isObject)) {
-        return;
     } else if (isArray(value)) {
-        console.error(`Unexpected mixed array found. Object:\n\n${prettyJSON(value)}`);
-        return;
+        const newArr = [];
+        for (const tableEntry in value) {
+            newArr.push(pathifyTableRow(value[tableEntry]));
+        }
+        blob.tables[valuePath] = newArr;
     } else if (isValue(value)) {
-        const valuePath = path.join('.');
-        console.warn(`Found VALUE: ${valuePath}: ${value}`);
         blob.values[valuePath] = value;
-        return;
     } else {
         console.error(`Unexpected object configuration found. Object:\n\n${prettyJSON(value)}`);
-        return;
     }
 }
 
@@ -81,65 +84,4 @@ function _recurseAndAdd(key, path, value, blob) {
  */
 export function prettyJSON(x) {
     return JSON.stringify(x, null, 2);
-}
-
-/**
- * Checks to see if the object is a JSON object.
- *
- * @param {Object} x  Object to test.
- * @returns {Boolean}
- */
-export function isObject(x) {
-    return xaType(x) === XA_TYPES.OBJECT;
-}
-
-/**
- * Checks to see if the object is an Array.
- *
- * @param {Object} x  Object to test.
- * @returns {Boolean}
- */
-export function isArray(x) {
-    return xaType(x) == XA_TYPES.ARRAY;
-}
-
-/**
- * Checks to see if the object is an XA VALUE.
- *
- * @param {Object} x  Object to test.
- * @returns {Boolean}
- */
-export function isValue(x) {
-    return xaType(x) == XA_TYPES.VALUE;
-}
-
-/**
- * Checks to see if the object is an XA table: an array with key-value JSON objects.
- *
- * @param {Object} x  Object to test.
- * @returns {Boolean}
- */
-export function isTable(x) {
-    // Table must be an array.
-    if (!isArray(x)) return false;
-
-    // Table must contain only objects.
-    if (!table.every(isObject)) return false;
-
-    // Table objects must all be key-value pairs.
-}
-
-/**
- * Returns the XA_TYPE enumeration of the input object.
- *
- * @param {Object} obj
- */
-export function xaType(obj) {
-    if (typeof obj === 'object') {
-        if (Array.isArray(obj)) {
-            return XA_TYPES.ARRAY;
-        }
-        return XA_TYPES.OBJECT;
-    }
-    return XA_TYPES.VALUE;
 }
