@@ -6,13 +6,19 @@ const XA_TYPES = {
     VALUE: 'value',
 };
 
+/**
+ * Tests the
+ * @param {*} stringx
+ */
 export function processText(stringx) {
     return stringx;
 }
 
 /**
- * pathifyJSON( document: JSON blob )
  * Takes a document and transforms nested objects into string paths.
+ *
+ * @param {Object} document A blob of incoming structured JSON data.
+ * @returns {Object} Restructured version of the original document
  */
 export function pathifyJSON(document) {
     const newBlob = { values: {}, tables: {} };
@@ -28,11 +34,14 @@ export function pathifyJSON(document) {
 }
 
 /**
+ * Returns a restructured JSON object with all values stored with full JSON
+ * string-paths in a values object, and all tables stored with full JSON
+ * string-paths in a tables object.
  *
- * @param {String} key
- * @param {Array} path
- * @param {Object} value
- * @param {Object} blob
+ * @param {String} key JSON object key.
+ * @param {Array} path Array of keys, the path to the current value.
+ * @param {Object} value The JSON object value.
+ * @param {Object} blob The returned object of the parent function
  */
 function _recurseAndAdd(key, path, value, blob) {
     if (isObject(value)) {
@@ -70,6 +79,7 @@ function _recurseAndAdd(key, path, value, blob) {
 
 /**
  * Returns the stringified version of a JSON object.
+ *
  * @param {Object} x Input JSON object.
  * @returns {String} Pretty-printed JSON string.
  */
@@ -79,6 +89,7 @@ export function prettyJSON(x) {
 
 /**
  * Checks to see if the object is a JSON object.
+ *
  * @param {Object} x  Object to test.
  * @returns {Boolean}
  */
@@ -88,6 +99,7 @@ export function isObject(x) {
 
 /**
  * Checks to see if the object is an Array.
+ *
  * @param {Object} x  Object to test.
  * @returns {Boolean}
  */
@@ -97,6 +109,7 @@ export function isArray(x) {
 
 /**
  * Checks to see if the object is an XA VALUE.
+ *
  * @param {Object} x  Object to test.
  * @returns {Boolean}
  */
@@ -106,6 +119,7 @@ export function isValue(x) {
 
 /**
  * Checks to see if the object is an XA table: an array with key-value JSON objects.
+ *
  * @param {Object} x  Object to test.
  * @returns {Boolean}
  */
@@ -121,6 +135,7 @@ export function isTable(x) {
 
 /**
  * Returns the XA_TYPE enumeration of the input object.
+ *
  * @param {Object} obj
  */
 export function xaType(obj) {
