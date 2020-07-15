@@ -34,9 +34,9 @@ export function pathifyJSON(document) {
 }
 
 /**
- * Returns a restructured JSON object with all values stored with full JSON
+ * Modifies a restructured JSON object with all values stored with full JSON
  * string-paths in a values object, and all tables stored with full JSON
- * string-paths in a tables object.
+ * string-paths in a tables object. Used by pathifyJSON function.
  *
  * @param {String} key JSON object key.
  * @param {Array} path Array of keys, the path to the current value.
@@ -52,19 +52,15 @@ function _recurseAndAdd(key, path, value, blob) {
         });
         return;
     } else if (isArray(value) && value.every(isValue)) {
-        // This is an ARRAY-VALUE
         const valuePath = path.join('.');
         blob.values[valuePath] = value;
         return;
     } else if (isArray(value) && value.every(isObject)) {
-        // This is a TABLE.
         return;
     } else if (isArray(value)) {
-        // This is a MIXED TABLE.
         console.error(`Unexpected mixed array found. Object:\n\n${prettyJSON(value)}`);
         return;
     } else if (isValue(value)) {
-        // The value is a VALUE.
         const valuePath = path.join('.');
         console.warn(`Found VALUE: ${valuePath}: ${value}`);
         blob.values[valuePath] = value;
