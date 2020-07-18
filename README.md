@@ -107,6 +107,9 @@ All _short-term_ data is included with the rule. Data that is to be applied to
 every incoming rule is considered _long term_ and, unless private, should be
 included with the rule when uploaded.
 
+Every table requirement without a path will be interpreted as an _input requirement_ and,
+when rules are being found, accompanying tables with the following parameters will be required.
+
 ```json
 {
     "id": "38936c5e",
@@ -177,13 +180,23 @@ included with the rule when uploaded.
 }
 ```
 
-### A Rule is Uploaded
+### Step One: Rules Are Uploaded
 
-Rule
+#### Rule One: Delivery Options
+
+Britannia offers several delivery options for customers, including local delivery. These are the criteria for their delivery options:
+
+-   Local Delivery: If the order is to be delivered in Ottawa, then local delivery is available at a flat rate of 15\$.
+-   Free local delivery: If a buyer spends 60\$ before tax or orders 24 or more cans, then local delivery is free.
+-   Canada Post: Orders can be delivered anywhere in Ontario using Canada Post. The rate is 6\$ per 12 cans.
+
+The website for the brewery is available worldwide, without geofencing. All buyers are welcome, but regulations require that only Ontario, Canada deliveries are permitted.
+
+The brewery wants to present all available options to customers. If they qualify for more than one delivery method, they should be able to choose.
 
 ```json
 {
-    "path": "ior://pub.ottawa.britannia.delivery-policy",
+    "path": "ior://pub.ottawa.britannia.delivery-options",
     "metadata": {},
     "requirements": {
         "context": {
@@ -197,13 +210,17 @@ Rule
         "fields": [
             {
                 "field_name": "id",
-                "field_path": "id",
+                "field_path": "input.values.id",
                 "field_standard": "database.sql.id"
             }
         ],
-        "tables": {
-            "items": ["id", "description", "quantity", "pricing"]
-        }
+        "tables": [
+            {
+                "path": "ior://pub.ottawa.brittania.delivery-policy",
+                "reference": "",
+                "columns": ["id", "description", "quantity", "pricing"]
+            }
+        ]
     },
     "input-conditions": [
         {
@@ -223,13 +240,22 @@ Rule
 }
 ```
 
-Proper table input:
+#### Rule Two: Anniversary Party
+
+This is an example of a promotional rule that Britannia ran on their fifth anniversary.
+
+-   All orders receive 2 brewery branded coasters.
+-   Orders over 20\$ get a pint glass.
+-   Orders over 50\$ get an anniversary t-shirt.
+-   Orders over 100\$ get 2 pint glasses and the t-shirt.
+
+This promotion was active from 2020 June 12 - 19.
 
 ```json
 {
     "Table": {
         "Metadata": {
-            "path": "gov.sg.iras.rules.absd.tables."
+            "path": "pub.ottawa.britannia.delivery-options"
         },
         "Data": [
             { "a": 1, "b": 2 },
@@ -240,7 +266,91 @@ Proper table input:
 }
 ```
 
+#### Rule Three: Loyalty Promotion
+
+This was a loyalty promotion that featured some new styles of beer that the brewery was offering. It was offered from 2020 June - July.
+
+-   To promote a new West Coast IPA, if the buyer had ordered beers that had a sum of greater then 300 IBU in the promotional period, then they got a “Bitter is Best” t-shirt.
+-   To promote their new British Porter, if the buyer had ordered more than 2 dozen cans of their english style range in the last 6 months, they get a promotional pint glass with a stylized “Dominion of Canada” brewery logo designed by a local artist. There must be at least 4 cans of the new porter in the qualifying order (The new porter is The Darkness in the sample data below).
+    In each of these loyalty offerings, the current order was considered as part of the total tally.
+
+```json
+{
+    "Table": {
+        "Metadata": {
+            "path": "pub.ottawa.britannia.brew-information"
+        },
+        "Data": [
+            {
+                "id": 1,
+                "name": "Dirty Summer Blonde",
+                "family": "american",
+                "style": "blonde",
+                "IBU": 20
+            },
+            {
+                "id": 2,
+                "name": "Britannia Amber Rose",
+                "family": "american",
+                "style": "amber",
+                "IBU": 20
+            },
+            {
+                "id": 3,
+                "name": "Eternally Hoptimistic",
+                "family": "american",
+                "style": "pale",
+                "IBU": 20
+            },
+            {
+                "id": 4,
+                "name": "Walk on the Mild Side",
+                "family": "british",
+                "style": "mild",
+                "IBU": 20
+            },
+            {
+                "id": 5,
+                "name": "The Notorious M.S.B.",
+                "family": "british",
+                "style": "brown",
+                "IBU": 20
+            },
+            {
+                "id": 6,
+                "name": "Quarter After Midnight",
+                "family": "british",
+                "style": "stout",
+                "IBU": 20
+            },
+            {
+                "id": 7,
+                "name": "Shed No Tears",
+                "family": "british",
+                "style": "chocolate stout",
+                "IBU": 20
+            },
+            {
+                "id": 8,
+                "name": "Britannia Royal Porter",
+                "family": "british",
+                "style": "porter",
+                "IBU": 20
+            }
+        ]
+    }
+}
+```
+
 <br />
+
+### Step Two: The System Runs
+
+Section on how the input is processed.
+
+### Step Three: Output is Returned
+
+Section on what the output looks like.
 
 ## Pathify Function Example
 
@@ -252,7 +362,7 @@ issues on this repository.
 
 ```json
 {
-    "id": "38936c5e",
+    "order_id": "38936c5e",
     "business": {
         "id": "breweries.canada.ottawa.britannia",
         "address": {
@@ -328,10 +438,16 @@ issues on this repository.
 
 **Output:**
 
+This will be provided to the system as the 'input blob' and will be available to reference for rule-writers at the input document.
+
+Values will be referenced like `input.values.value_name`
+
+Tables and table values will be referenced like `input.tables.table_name.field_name`
+
 ```json
 {
     "values": {
-        "id": 38936,
+        "order_id": 38936,
         "business.id": "breweries.canada.ottawa.britannia",
         "business.address.street": "Lager St",
         "business.address.number": 19,
