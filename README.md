@@ -295,42 +295,39 @@ The brewery wants to present all available options to customers. If they qualify
     "output-assertions": [
         {
             "context": {
-                "explanation": "Local delivery is available for $15.",
+                "explanation": "Local delivery is available for $15."
             },
             "cases": {
                 "A": "T",
                 "B": "F",
                 "C": "F"
             }
-
         },
         {
             "context": {
-                "explanation": "Local delivery is available for free.",
+                "explanation": "Local delivery is available for free."
             },
             "cases": {
                 "A": "F",
                 "B": "T",
                 "C": "F"
             }
-
         },
         {
             "context": {
-                "explanation": "Your order can be delivered for $6 per 12 cans.",
+                "explanation": "Your order can be delivered for $6 per 12 cans."
             },
             "cases": {
                 "A": "T",
                 "B": "F",
                 "C": "F"
             }
-
-        },
+        }
     ],
     "standards": [
         {
             "path": "a.b.c.d",
-            "standard": "ISO-000000000",
+            "standard": "ISO-000000000"
         }
     ]
 }
@@ -540,6 +537,12 @@ Section on how the input is processed.
 
 Section on what the output looks like.
 
+<br />
+
+<br />
+
+<br />
+
 ## Pathify Function Example
 
 The `pathifyJSON` function takes blobs of input data and reliably restructures
@@ -674,6 +677,81 @@ Tables and table values will be referenced like `input.tables.table_name.field_n
                 "pricing.price.currency_code": "CAD",
                 "pricing.quantity.value": 1,
                 "pricing.quantity.unit": "can"
+            }
+        ]
+    }
+}
+```
+
+<br />
+
+<br />
+
+<br />
+
+# Potential Format for Metadata
+
+```json
+{
+    "Rule": {
+        "Metadata": {
+            "Rule": {
+                "id": "r6qW2UeKE5hq",
+                "version": "0.3.0",
+                "criticality": "experimental",
+                "url": "https://www.iras.gov.sg/IRASHome/Other-Taxes/Stamp-Duty-for-Property/Working-out-your-Stamp-Duty/Buying-or-Acquiring-Property/What-is-the-Duty-that-I-Need-to-Pay-as-a-Buyer-or-Transferee-of-Residential-Property/Additional-Buyer-s-Stamp-Duty--ABSD-"
+            },
+            "RuleMaker": {
+                "Entity": {
+                    "name": "Inland Revenue Authority of Singapore",
+                    "url": "https://www.iras.gov.sg",
+                    "id": "gov.sg.iras"
+                },
+                "Managers": ["jpotvin.solid.community/profile/card#me"],
+                "Authors": [
+                    "jpotvin.solid.community/profile/card#me",
+                    "ryanfleck.solid.community/profile/card#me"
+                ]
+            },
+            "Xalgorithms-Engine": {
+                "version": "0.5.0 Tabular Alpha"
+            }
+        },
+        "Input": {
+            "Sources": {},
+            "Context": {},
+            "Filters": {},
+            "Conditions": {}
+        },
+        "Output": {
+            "Assertions": {},
+            "Purpose": {},
+            "Weight": {}
+        },
+        "Standards": [
+            {
+                "fields": ["parties.buyer.industry"],
+                "title": {
+                    "concise": "",
+                    "full": ""
+                },
+                "url": ""
+            },
+            {
+                "fields": ["item.classification"],
+                "title": {
+                    "concise": "",
+                    "full": ""
+                },
+                "url": ""
+            },
+            {
+                "fields": ["purchaseorder", "invoice", "creditnote"],
+                "title": {
+                    "concise": "",
+                    "full": ""
+                },
+                "url": ""
             }
         ]
     }
