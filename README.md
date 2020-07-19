@@ -207,20 +207,20 @@ The brewery wants to present all available options to customers. If they qualify
         },
         "fields": [
             {
-                "field_reference": "city",
-                "field_path": "input.values.customer.address.city",
-                "field_standard": "fake_standard.canada.ca-on.cities"
+                "reference": "city",
+                "path": "input.values.customer.address.city",
+                "standard": "fake_standard.canada.ca-on.cities"
             },
             {
-                "field_reference": "province",
-                "field_path": "input.values.customer.address.subentity.code.value",
-                "field_standard": "ISO.3116-2"
+                "reference": "province",
+                "path": "input.values.customer.address.subentity.code.value",
+                "standard": "ISO.3116-2"
             }
         ],
         "tables": [
             {
-                "table_reference": "items",
-                "table_path": "input.tables.items",
+                "reference": "items",
+                "path": "input.tables.items",
                 "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
@@ -231,7 +231,7 @@ The brewery wants to present all available options to customers. If they qualify
                 "explanation": "The customer is in the City of Ottawa",
                 "condition": {
                     "value": "city",
-                    "op": "equal-to",
+                    "operation": "equal-to",
                     "input": "Ottawa"
                 }
             },
@@ -246,29 +246,34 @@ The brewery wants to present all available options to customers. If they qualify
                 "explanation": "Order subtotal is >$60",
                 "operations": [
                     {
-                        "op": "row-divide",
+                        "type": "row",
+                        "operation": "divide",
                         "table": "items",
                         "new-column-name": "price-per-quant",
                         "input": ["quantity.value", "pricing.quantity.value"]
                     },
                     {
-                        "op": "row-multiply",
+                        "type": "row",
+                        "operation": "multiply",
                         "table": "items",
                         "new-column-name": "cost-of-pack",
                         "input": ["quantity.value", "pricing.quantity.value"]
                     },
                     {
-                        "op": "column-sum",
-                        "new-value-name": "items.subtotal",
+                        "type": "column",
+                        "operation": "sum",
+                        "new-value-name": "calculated.items.subtotal",
                         "table": "items",
                         "input": ["cost-of-pack"]
                     }
                 ],
-                "condition": {
-                    "value": "items.subtotal",
-                    "op": "greater-than",
-                    "input": 60
-                }
+                "conditions": [
+                    {
+                        "value": "calculated.items.subtotal",
+                        "operation": "greater-than",
+                        "input": 60
+                    }
+                ]
             },
             "cases": {
                 "A": "F",
@@ -279,11 +284,13 @@ The brewery wants to present all available options to customers. If they qualify
         {
             "context": {
                 "explanation": "Customer is in the Province of Ontario",
-                "condition": {
-                    "value": "province",
-                    "op": "equal-to",
-                    "input": "CA-ON"
-                }
+                "conditions": [
+                    {
+                        "value": "province",
+                        "operation": "equal-to",
+                        "input": "CA-ON"
+                    }
+                ]
             },
             "cases": {
                 "A": "T",
@@ -295,7 +302,7 @@ The brewery wants to present all available options to customers. If they qualify
     "output-assertions": [
         {
             "context": {
-                "explanation": "Local delivery is available for $15."
+                "assertion": "Local delivery is available for $15."
             },
             "cases": {
                 "A": "T",
@@ -305,7 +312,7 @@ The brewery wants to present all available options to customers. If they qualify
         },
         {
             "context": {
-                "explanation": "Local delivery is available for free."
+                "assertion": "Local delivery is available for free."
             },
             "cases": {
                 "A": "F",
@@ -315,7 +322,22 @@ The brewery wants to present all available options to customers. If they qualify
         },
         {
             "context": {
-                "explanation": "Your order can be delivered for $6 per 12 cans."
+                "assertion": "Your order can be delivered for $6 per 12 cans, which comes to {{calculated.order-total-shipping-cost}}.",
+                "operations": [
+                    {
+                        "type": "column",
+                        "operation": "sum",
+                        "new-value-name": "calculated.items.total-quantity",
+                        "table": "items",
+                        "input": ["quantity.value"]
+                    },
+                    {
+                        "type": "value",
+                        "operation": "multiply",
+                        "new-value-name": "calculated.order-total-shipping-cost",
+                        "input": ["calculated.items.total-quantity", 6]
+                    }
+                ]
             },
             "cases": {
                 "A": "T",
@@ -344,6 +366,8 @@ This is an example of a promotional rule that Britannia ran on their fifth anniv
 
 This promotion was active from 2020 June 12 - 19.
 
+*In this example, notice the operations section included after the requirements. The calculations performed here will be made available to all the operations performed after this point.
+
 ```json
 {
     "path": "ior://pub.ottawa.britannia.anniversary-party",
@@ -355,53 +379,139 @@ This promotion was active from 2020 June 12 - 19.
                 "start": "2020-01-01 00:00",
                 "end": null
             },
-            "business": "ior://breweries.canada.ottawa.britannia"
+            "business": "canada.ottawa.breweries.britannia"
         },
         "fields": [
             {
-                "field_name": "id",
-                "field_path": "input.values.id",
-                "field_standard": "database.sql.id"
+                "reference": "city",
+                "path": "input.values.customer.address.city",
+                "standard": "fake_standard.canada.ca-on.cities"
             }
         ],
         "tables": [
             {
-                "path": "ior://pub.ottawa.brittania.delivery-policy",
-                "reference": "",
-                "columns": ["id", "description", "quantity", "pricing"]
+                "reference": "items",
+                "path": "input.tables.items",
+                "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
     },
+    "operations": [
+        {
+            "type": "row",
+            "operation": "divide",
+            "table": "items",
+            "input": ["quantity.value", "pricing.quantity.value"],
+            "new-column-name": "price-per-quant"
+        },
+        {
+            "type": "row",
+            "operation": "multiply",
+            "table": "items",
+            "input": ["quantity.value", "pricing.quantity.value"],
+            "new-column-name": "cost-of-pack"
+        },
+        {
+            "type": "column",
+            "operation": "sum",
+            "table": "items",
+            "input": ["cost-of-pack"],
+            "new-value-name": "calculated.items.subtotal"
+        }
+    ],
     "input-conditions": [
         {
-            "context": {},
+            "context": {
+                "explanation": "The order exists"
+            },
             "cases": {
                 "A": "T",
                 "B": "T",
                 "C": "T",
-                "D": "T",
-                "E": "T",
-                "F": "T"
+                "D": "T"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Order subtotal is >$60",
+                "conditions": [
+                    {
+                        "value": "calculated.items.subtotal",
+                        "operation": "greater-than",
+                        "input": 60
+                    }
+                ]
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "X"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Customer is in the Province of Ontario",
+                "conditions": [
+                    {
+                        "value": "province",
+                        "operation": "equal-to",
+                        "input": "CA-ON"
+                    }
+                ]
+            },
+            "cases": {
+                "A": "T",
+                "B": "T",
+                "C": "T"
             }
         }
     ],
-    "output-assertions": [],
-    "standards": {}
-}
-```
-
-```json
-{
-    "Table": {
-        "Metadata": {
-            "path": "pub.ottawa.britannia.delivery-options"
+    "output-assertions": [
+        {
+            "context": {
+                "assertion": "Local delivery is available for $15."
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
         },
-        "Data": [
-            { "a": 1, "b": 2 },
-            { "a": 2, "b": 4 },
-            { "a": 3, "b": 6 }
-        ]
-    }
+        {
+            "context": {
+                "assertion": "Local delivery is available for free."
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "F"
+            }
+        },
+        {
+            "context": {
+                "assertion": "Your order can be delivered for $6 per 12 cans, which comes to {{order-total-shipping-cost}}.",
+                "operations": [
+                    {
+                        "operation": "column-sum",
+                        "new-value-name": "calculated.items.total-quantity",
+                        "table": "items",
+                        "input": ["quantity.value"]
+                    },
+                    {
+                        "operation": "value-multiply",
+                        "new-value-name": "order-total-shipping-cost",
+                        "input": ["calculated.items.total-quantity", 6]
+                    }
+                ]
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
+        }
+    ],
+    "standards": []
 }
 ```
 
