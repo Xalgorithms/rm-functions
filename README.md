@@ -133,7 +133,6 @@ when rules are being found, accompanying tables with the following parameters wi
     },
     "items": [
         {
-            // 6 cans of 'The MSB' priced at 5.76CAD per 1 can
             "id": {
                 "value": "1",
                 "list_id": "britannia-stock-ids"
@@ -155,7 +154,6 @@ when rules are being found, accompanying tables with the following parameters wi
             }
         },
         {
-            // 12 cans of 'Eternally Hoptimistic' priced at 4.87CAD per 1 can
             "id": {
                 "value": "3",
                 "list_id": "britannia-stock-ids"
@@ -205,6 +203,161 @@ The brewery wants to present all available options to customers. If they qualify
                 "start": "2020-01-01 00:00",
                 "end": null
             },
+            "business": "canada.ottawa.breweries.britannia"
+        },
+        "fields": [
+            {
+                "field_reference": "city",
+                "field_path": "input.values.customer.address.city",
+                "field_standard": "fake_standard.canada.ca-on.cities"
+            },
+            {
+                "field_reference": "province",
+                "field_path": "input.values.customer.address.subentity.code.value",
+                "field_standard": "ISO.3116-2"
+            }
+        ],
+        "tables": [
+            {
+                "table_reference": "items",
+                "table_path": "input.tables.items",
+                "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
+            }
+        ]
+    },
+    "input-conditions": [
+        {
+            "context": {
+                "explanation": "The customer is in the City of Ottawa",
+                "condition": {
+                    "value": "city",
+                    "op": "equal-to",
+                    "input": "Ottawa"
+                }
+            },
+            "cases": {
+                "A": "T",
+                "B": "T",
+                "C": "F"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Order subtotal is >$60",
+                "operations": [
+                    {
+                        "op": "row-divide",
+                        "table": "items",
+                        "new-column-name": "price-per-quant",
+                        "input": ["quantity.value", "pricing.quantity.value"]
+                    },
+                    {
+                        "op": "row-multiply",
+                        "table": "items",
+                        "new-column-name": "cost-of-pack",
+                        "input": ["quantity.value", "pricing.quantity.value"]
+                    },
+                    {
+                        "op": "column-sum",
+                        "new-value-name": "items.subtotal",
+                        "table": "items",
+                        "input": ["cost-of-pack"]
+                    }
+                ],
+                "condition": {
+                    "value": "items.subtotal",
+                    "op": "greater-than",
+                    "input": 60
+                }
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "X"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Customer is in the Province of Ontario",
+                "condition": {
+                    "value": "province",
+                    "op": "equal-to",
+                    "input": "CA-ON"
+                }
+            },
+            "cases": {
+                "A": "T",
+                "B": "T",
+                "C": "T"
+            }
+        }
+    ],
+    "output-assertions": [
+        {
+            "context": {
+                "explanation": "Local delivery is available for $15.",
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
+
+        },
+        {
+            "context": {
+                "explanation": "Local delivery is available for free.",
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "F"
+            }
+
+        },
+        {
+            "context": {
+                "explanation": "Your order can be delivered for $6 per 12 cans.",
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
+
+        },
+    ],
+    "standards": [
+        {
+            "path": "a.b.c.d",
+            "standard": "ISO-000000000",
+        }
+    ]
+}
+```
+
+#### Rule Two: Anniversary Party
+
+This is an example of a promotional rule that Britannia ran on their fifth anniversary.
+
+-   All orders receive 2 brewery branded coasters.
+-   Orders over 20\$ get a pint glass.
+-   Orders over 50\$ get an anniversary t-shirt.
+-   Orders over 100\$ get 2 pint glasses and the t-shirt.
+
+This promotion was active from 2020 June 12 - 19.
+
+```json
+{
+    "path": "ior://pub.ottawa.britannia.anniversary-party",
+    "metadata": {},
+    "requirements": {
+        "context": {
+            "time": {
+                "timezone": "UTC-05:00",
+                "start": "2020-01-01 00:00",
+                "end": null
+            },
             "business": "ior://breweries.canada.ottawa.britannia"
         },
         "fields": [
@@ -240,17 +393,6 @@ The brewery wants to present all available options to customers. If they qualify
 }
 ```
 
-#### Rule Two: Anniversary Party
-
-This is an example of a promotional rule that Britannia ran on their fifth anniversary.
-
--   All orders receive 2 brewery branded coasters.
--   Orders over 20\$ get a pint glass.
--   Orders over 50\$ get an anniversary t-shirt.
--   Orders over 100\$ get 2 pint glasses and the t-shirt.
-
-This promotion was active from 2020 June 12 - 19.
-
 ```json
 {
     "Table": {
@@ -273,6 +415,52 @@ This was a loyalty promotion that featured some new styles of beer that the brew
 -   To promote a new West Coast IPA, if the buyer had ordered beers that had a sum of greater then 300 IBU in the promotional period, then they got a “Bitter is Best” t-shirt.
 -   To promote their new British Porter, if the buyer had ordered more than 2 dozen cans of their english style range in the last 6 months, they get a promotional pint glass with a stylized “Dominion of Canada” brewery logo designed by a local artist. There must be at least 4 cans of the new porter in the qualifying order (The new porter is The Darkness in the sample data below).
     In each of these loyalty offerings, the current order was considered as part of the total tally.
+
+```json
+{
+    "path": "ior://pub.ottawa.britannia.loyalty-promotion",
+    "metadata": {},
+    "requirements": {
+        "context": {
+            "time": {
+                "timezone": "UTC-05:00",
+                "start": "2020-01-01 00:00",
+                "end": null
+            },
+            "business": "ior://breweries.canada.ottawa.britannia"
+        },
+        "fields": [
+            {
+                "field_name": "id",
+                "field_path": "input.values.id",
+                "field_standard": "database.sql.id"
+            }
+        ],
+        "tables": [
+            {
+                "path": "ior://pub.ottawa.brittania.delivery-policy",
+                "reference": "",
+                "columns": ["id", "description", "quantity", "pricing"]
+            }
+        ]
+    },
+    "input-conditions": [
+        {
+            "context": {},
+            "cases": {
+                "A": "T",
+                "B": "T",
+                "C": "T",
+                "D": "T",
+                "E": "T",
+                "F": "T"
+            }
+        }
+    ],
+    "output-assertions": [],
+    "standards": {}
+}
+```
 
 ```json
 {
