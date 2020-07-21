@@ -220,7 +220,7 @@ The brewery wants to present all available options to customers. If they qualify
         "tables": [
             {
                 "reference": "items",
-                "probable_path":"input.tables.items",
+                "probable_path": "input.tables.items",
                 "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
@@ -391,7 +391,7 @@ This promotion was active from 2020 June 12 - 19.
         "tables": [
             {
                 "reference": "items",
-                "probable_path":"input.tables.items",
+                "probable_path": "input.tables.items",
                 "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
@@ -547,21 +547,25 @@ This example is currently **incomplete**.
         },
         "fields": [
             {
-                "reference": "city",
-                "path": "input.values.customer.address.city",
-                "standard": "fake_standard.canada.ca-on.cities"
+                "reference": "customer.id",
+                "path": "input.values.customer.id"
             }
         ],
         "tables": [
             {
                 "reference": "orders",
-                "probable_path":"input.tables.orders",
-                "columns":["id","name","stock_id","order_id","quantity", "order_date"],
+                "probable_path": "input.tables.orders",
+                "columns": ["id", "name", "stock_id", "order_id", "quantity", "order_date"]
+            },
+            {
+                "reference": "items",
+                "probable_path": "input.tables.items",
+                "columns": ["id.value", "quantity.value"]
             },
             {
                 "reference": "brews",
                 "path": "pub.ottawa.britannia.brew-information",
-                "columns":["id","name","family","style","IBU"],
+                "columns": ["id", "name", "family", "style", "IBU"]
             }
         ]
     },
