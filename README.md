@@ -199,8 +199,8 @@ The brewery wants to present all available options to customers. If they qualify
     "requirements": {
         "context": {
             "time": {
-                "timezone": "UTC-05:00",
-                "start": "2020-01-01 00:00",
+                "timezone": "UTC-04:00",
+                "start": "2020-01-01T00:00:00-04:00",
                 "end": null
             },
             "business": "canada.ottawa.breweries.britannia"
@@ -220,7 +220,7 @@ The brewery wants to present all available options to customers. If they qualify
         "tables": [
             {
                 "reference": "items",
-                "path": "input.tables.items",
+                "probable_path":"input.tables.items",
                 "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
@@ -348,8 +348,8 @@ The brewery wants to present all available options to customers. If they qualify
     ],
     "standards": [
         {
-            "path": "a.b.c.d",
-            "standard": "ISO-000000000"
+            "path": ["requirements.context.time.start", "requirements.context.time.end"],
+            "standard": "ISO 8601"
         }
     ]
 }
@@ -366,17 +366,17 @@ This is an example of a promotional rule that Britannia ran on their fifth anniv
 
 This promotion was active from 2020 June 12 - 19.
 
-*In this example, notice the operations section included after the requirements. The calculations performed here will be made available to all the operations performed after this point.
+\*In this example, notice the operations section included after the requirements. The calculations performed here will be made available to all the operations performed after this point.
 
 ```json
 {
-    "path": "ior://pub.ottawa.britannia.anniversary-party",
+    "path": "pub.ottawa.britannia.anniversary-party",
     "metadata": {},
     "requirements": {
         "context": {
             "time": {
-                "timezone": "UTC-05:00",
-                "start": "2020-01-01 00:00",
+                "timezone": "UTC-04:00",
+                "start": "2020-01-01T00:00:00-04:00",
                 "end": null
             },
             "business": "canada.ottawa.breweries.britannia"
@@ -391,7 +391,7 @@ This promotion was active from 2020 June 12 - 19.
         "tables": [
             {
                 "reference": "items",
-                "path": "input.tables.items",
+                "probable_path":"input.tables.items",
                 "columns": ["id", "quantity.value", "pricing.price.value", "pricing.quantity.value"]
             }
         ]
@@ -511,7 +511,12 @@ This promotion was active from 2020 June 12 - 19.
             }
         }
     ],
-    "standards": []
+    "standards": [
+        {
+            "path": ["requirements.context.time.start", "requirements.context.time.end"],
+            "standard": "ISO 8601"
+        }
+    ]
 }
 ```
 
@@ -520,54 +525,234 @@ This promotion was active from 2020 June 12 - 19.
 This was a loyalty promotion that featured some new styles of beer that the brewery was offering. It was offered from 2020 June - July.
 
 -   To promote a new West Coast IPA, if the buyer had ordered beers that had a sum of greater then 300 IBU in the promotional period, then they got a “Bitter is Best” t-shirt.
+
 -   To promote their new British Porter, if the buyer had ordered more than 2 dozen cans of their english style range in the last 6 months, they get a promotional pint glass with a stylized “Dominion of Canada” brewery logo designed by a local artist. There must be at least 4 cans of the new porter in the qualifying order (The new porter is The Darkness in the sample data below).
-    In each of these loyalty offerings, the current order was considered as part of the total tally.
+
+In each of these loyalty offerings, the current order was considered as part of the total tally.
+
+This example is currently **incomplete**.
 
 ```json
 {
-    "path": "ior://pub.ottawa.britannia.loyalty-promotion",
+    "path": "pub.ottawa.britannia.loyalty-promotion",
     "metadata": {},
     "requirements": {
         "context": {
             "time": {
-                "timezone": "UTC-05:00",
-                "start": "2020-01-01 00:00",
-                "end": null
+                "timezone": "UTC-04:00",
+                "start": "2020-06-01T00:00:00-04:00",
+                "end": "2020-08-01T00:00:00-04:00"
             },
-            "business": "ior://breweries.canada.ottawa.britannia"
+            "business": "canada.ottawa.breweries.britannia"
         },
         "fields": [
             {
-                "field_name": "id",
-                "field_path": "input.values.id",
-                "field_standard": "database.sql.id"
+                "reference": "city",
+                "path": "input.values.customer.address.city",
+                "standard": "fake_standard.canada.ca-on.cities"
             }
         ],
         "tables": [
             {
-                "path": "ior://pub.ottawa.brittania.delivery-policy",
-                "reference": "",
-                "columns": ["id", "description", "quantity", "pricing"]
+                "reference": "orders",
+                "probable_path":"input.tables.orders",
+                "columns":["id","name","stock_id","order_id","quantity", "order_date"],
+            },
+            {
+                "reference": "brews",
+                "path": "pub.ottawa.britannia.brew-information",
+                "columns":["id","name","family","style","IBU"],
             }
         ]
     },
+    "operations": [
+        {
+            "type": "row",
+            "operation": "divide",
+            "table": "items",
+            "input": ["quantity.value", "pricing.quantity.value"],
+            "new-column-name": "price-per-quant"
+        },
+        {
+            "type": "row",
+            "operation": "multiply",
+            "table": "items",
+            "input": ["quantity.value", "pricing.quantity.value"],
+            "new-column-name": "cost-of-pack"
+        },
+        {
+            "type": "column",
+            "operation": "sum",
+            "table": "items",
+            "input": ["cost-of-pack"],
+            "new-value-name": "calculated.items.subtotal"
+        }
+    ],
     "input-conditions": [
         {
-            "context": {},
+            "context": {
+                "explanation": "The order exists"
+            },
             "cases": {
                 "A": "T",
                 "B": "T",
                 "C": "T",
-                "D": "T",
-                "E": "T",
-                "F": "T"
+                "D": "T"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Order subtotal is >$60",
+                "conditions": [
+                    {
+                        "value": "calculated.items.subtotal",
+                        "operation": "greater-than",
+                        "input": 60
+                    }
+                ]
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "X"
+            }
+        },
+        {
+            "context": {
+                "explanation": "Customer is in the Province of Ontario",
+                "conditions": [
+                    {
+                        "value": "province",
+                        "operation": "equal-to",
+                        "input": "CA-ON"
+                    }
+                ]
+            },
+            "cases": {
+                "A": "T",
+                "B": "T",
+                "C": "T"
             }
         }
     ],
-    "output-assertions": [],
-    "standards": {}
+    "output-assertions": [
+        {
+            "context": {
+                "assertion": "Local delivery is available for $15."
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
+        },
+        {
+            "context": {
+                "assertion": "Local delivery is available for free."
+            },
+            "cases": {
+                "A": "F",
+                "B": "T",
+                "C": "F"
+            }
+        },
+        {
+            "context": {
+                "assertion": "Your order can be delivered for $6 per 12 cans, which comes to {{order-total-shipping-cost}}.",
+                "operations": [
+                    {
+                        "operation": "column-sum",
+                        "new-value-name": "calculated.items.total-quantity",
+                        "table": "items",
+                        "input": ["quantity.value"]
+                    },
+                    {
+                        "operation": "value-multiply",
+                        "new-value-name": "order-total-shipping-cost",
+                        "input": ["calculated.items.total-quantity", 6]
+                    }
+                ]
+            },
+            "cases": {
+                "A": "T",
+                "B": "F",
+                "C": "F"
+            }
+        }
+    ],
+    "standards": [
+        {
+            "path": ["requirements.context.time.start", "requirements.context.time.end"],
+            "standard": "ISO 8601"
+        }
+    ]
 }
 ```
+
+The following table will be submitted as part of the input:
+
+```json
+{
+    "orders": [
+        {
+            "id": "27eb11cd",
+            "name": "Laverne De Fazio",
+            "stock_id": 1,
+            "stock_name": "Dirty Summer Blonde",
+            "order_id": "d4af0131",
+            "quantity": 12,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        },
+        {
+            "id": "675b70ec",
+            "name": "Shirley Feeney",
+            "stock_id": 3,
+            "stock_name": "Eternally Hoptimistic",
+            "order_id": "3b9e255d",
+            "quantity": 24,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        },
+        {
+            "id": "6bc91ad2",
+            "name": "Leonard Kosnowski",
+            "stock_id": 2,
+            "stock_name": "Britannia Amber Rose",
+            "order_id": "0e3b047d",
+            "quantity": 48,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        },
+        {
+            "id": "72cb5602",
+            "name": "Andrew Squiggman",
+            "stock_id": 5,
+            "stock_name": "The Notorious M.S.B.",
+            "order_id": "38936c5e",
+            "quantity": 6,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        },
+        {
+            "id": "72cb5602",
+            "name": "Andrew Squiggman",
+            "stock_id": 3,
+            "stock_name": "Eternally Hoptimistic",
+            "order_id": "38936c5e",
+            "quantity": 12,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        },
+        {
+            "id": "72cb5602",
+            "name": "Andrew Squiggman",
+            "stock_id": 7,
+            "stock_name": "Shed No Tears",
+            "order_id": "95475c5c",
+            "quantity": 12,
+            "order_date": "2020-06-13T00:30:24-04:00"
+        }
+    ]
+}
+```
+
+The following table will be submitted _with_ the rule:
 
 ```json
 {
@@ -643,9 +828,37 @@ This was a loyalty promotion that featured some new styles of beer that the brew
 
 Section on how the input is processed.
 
+#### Delivery Options
+
+Content
+
+#### Loyalty Promotion
+
+Content
+
+#### Anniversary Party
+
+Content
+
+<br />
+
 ### Step Three: Output is Returned
 
 Section on what the output looks like.
+
+#### Delivery Options
+
+Content
+
+#### Loyalty Promotion
+
+Content
+
+#### Anniversary Party
+
+Content
+
+<br />
 
 <br />
 
