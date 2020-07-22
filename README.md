@@ -85,7 +85,50 @@ group of input, rules, and tables is known as the 'body' below:
 {}
 ```
 
+## Sample Input: Britannia Tables
+
+### Delivery
+
+![delivery program table](/docs/britannia.delivery.png)
+
+As JSON:
+
+```json
+{}
+```
+
+### Anniversary
+
+![anniversary program table](/docs/britannia.anniversary.png)
+
+As JSON:
+
+```json
+{}
+```
+
+### Loyalty
+
+![loyalty program table](/docs/britannia.loyalty.png)
+
+As JSON:
+
+```json
+{}
+```
+
 <br />
+
+<br />
+
+<br />
+
+<br />
+
+# Deprecated: Expanded Table Processing System
+
+These cases with `operations` fields for processing tables are potentially to be
+included in the future, but for now are **out of scope**.
 
 ## Sample System Run
 
@@ -917,7 +960,7 @@ Content
 
 <br />
 
-## Pathify Function Example
+# Pathify Function Example
 
 The `pathifyJSON` function takes blobs of input data and reliably restructures
 them into values and tables. Please report any problems with this process as
