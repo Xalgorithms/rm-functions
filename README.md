@@ -555,29 +555,75 @@ This example is currently **incomplete**.
             {
                 "reference": "orders",
                 "probable_path": "input.tables.orders",
-                "columns": ["id", "name", "stock_id", "order_id", "quantity", "order_date"]
+                "columns": ["id", "name", "stock_id", "order_id", "quantity", "order_date"],
+                "note": "This input table must contain the order history of all customers."
             },
             {
                 "reference": "items",
                 "probable_path": "input.tables.items",
-                "columns": ["id.value", "quantity.value"]
+                "columns": ["id.value", "quantity.value"],
+                "note": "This input table must contain the items in the current order."
             },
             {
                 "reference": "brews",
                 "path": "pub.ottawa.britannia.brew-information",
-                "columns": ["id", "name", "family", "style", "IBU"]
+                "columns": ["id", "name", "family", "style", "IBU"],
+                "note": "This IOR table contains the Britannia brewing beer collection."
             }
         ]
     },
     "operations": [
+        "Note: does this entire thing come down to map-filter-reduce? Three ops?",
         {
+            "note": "Reduces the orders table into the orders from the current customer.",
+            "type": "table",
+            "operation": "filter",
+            "table": "orders",
+            "column": "id",
+            "operation": "equals",
+            "parameter": "customer.id",
+            "new-table-name": "customer-orders"
+        },
+        {
+            "note": "Returns the cross product of the customer-orders and brews table.",
+            "type": "table",
+            "operation": "combine",
+            "match-column": true,
+            "tables": ["customer-orders", "brews"],
+            "conflict-action": "prepend-table-name",
+            "new-table-name": "customer-orders-with-brews"
+        },
+        "Note: ability to remove and rename columns?",
+        {
+            "note": "Filters the customer-orders-with-brews table down to match brews with orders.",
+            "type": "table",
+            "operation": "filter",
+            "table": "orders",
+            "column": "stock_id",
+            "operation": "equals",
+            "parameter": "brews.id",
+            "new-table-name": "customer-orders"
+        },
+        {
+            "note": "Reduces the orders table into the orders from the current customer.",
+            "type": "table",
+            "operation": "filter",
+            "table": "orders",
+            "column": "id",
+            "operation": "equals",
+            "parameter": "customer.id",
+            "new-table-name": "customer-orders"
+        },
+        {
+            "note": "",
             "type": "row",
-            "operation": "divide",
+            "operation": "multiply",
             "table": "items",
             "input": ["quantity.value", "pricing.quantity.value"],
             "new-column-name": "price-per-quant"
         },
         {
+            "note": "",
             "type": "row",
             "operation": "multiply",
             "table": "items",
@@ -585,6 +631,7 @@ This example is currently **incomplete**.
             "new-column-name": "cost-of-pack"
         },
         {
+            "note": "",
             "type": "column",
             "operation": "sum",
             "table": "items",
