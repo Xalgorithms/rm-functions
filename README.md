@@ -26,9 +26,11 @@ yarn add xalgo-rule-processor
 npm i xalgo-rule-processor
 ```
 
-Rules and tables can be passed to the exposed function:
-
 ```js
+import { prettyJSON, processRule } from "xalgo-rule-processor";
+
+console.log(prettyJSON(theme));
+
 processRule(rules, tables);
 ```
 
