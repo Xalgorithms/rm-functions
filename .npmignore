@@ -1,0 +1,9 @@
+.gitingore
+.prettier*
+.eslint*
+.babel*
+test/
+node_modules/
+docs/
+jest.*
+.travis*
