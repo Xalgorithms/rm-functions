@@ -36,8 +36,11 @@ processRule(rules, tables);
 
 ### Testing
 
-```
+```sh
 yarn test
+
+# Alternatively, watch for changes 
+yarn test --watch
 ```
 
 ### Publishing to NPM

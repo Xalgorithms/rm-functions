@@ -1,6 +1,11 @@
 //export * from './utils';
 
-import { isObject, isArray, isValue, isTable } from './types.js';
+import { isObject, isArray, isValue } from './types.js';
+
+/*
+ * Export items from other modules.
+ */
+export { enforceSchema } from './utilities.js';
 
 /**
  * Tests the
