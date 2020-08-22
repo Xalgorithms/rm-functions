@@ -10,6 +10,9 @@
 A library with utilities for processing blobs of input data and running the
 input data against rule blobs.
 
+Also includes a selection of useful utilities for processing JSON and enforcing the XA
+rule schema on blobs of JSON.
+
 <br />
 
 ## Usage
@@ -27,10 +30,11 @@ npm i xalgo-rule-processor
 ```
 
 ```js
-import { prettyJSON, processRule } from "xalgo-rule-processor";
+import { prettyJSON, processRule } from 'xalgo-rule-processor';
 
 console.log(prettyJSON(theme));
 
+// This specific fuction is currently in developemnt.
 processRule(rules, tables);
 ```
 
@@ -39,7 +43,7 @@ processRule(rules, tables);
 ```sh
 yarn test
 
-# Alternatively, watch for changes 
+# Alternatively, watch for changes
 yarn test --watch
 ```
 

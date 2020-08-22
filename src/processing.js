@@ -1,3 +1,9 @@
+/**
+ * @file
+ *
+ * Provides functions for processing incoming JSON and enforcing JSON schema.
+ */
+
 import {
     prettyJSON,
     isObject,
@@ -55,6 +61,7 @@ function _pathifyJSON_Base(document, table = false) {
  * string-paths in a values object, and all tables stored with full JSON
  * string-paths in a tables object. Used by pathifyJSON function.
  *
+ * @private
  * @param {String} key JSON object key.
  * @param {Array} path Array of keys, the path to the current value.
  * @param {Object} value The JSON object value.
@@ -144,6 +151,7 @@ export function enforceSchema(schema, content, addEmptyTableRows = false, skipSc
 
 /**
  * Checks the content JSON for incorrect keys or keys with incorrect values.
+ * @private
  * @param {JSON} schema The schema JSON to observe.
  * @param {JSON} content The conent JSON to check.
  */
@@ -179,6 +187,7 @@ function _enforceSchemaCheckForIncorrectFields(schema, content) {
 
 /**
  * Adds blank missing fields to all objects in the schema.
+ * @private
  * @param {JSON} schema The schema JSON to observe.
  * @param {JSON} content The conent JSON to modify.
  */
@@ -278,6 +287,7 @@ export function checkSchema(schema) {
 
 /**
  * Returns true if key does not start with double underscore, indicating an infoKey
+ * @private
  * @param {String} key
  */
 function _isNotInfoKey(key) {

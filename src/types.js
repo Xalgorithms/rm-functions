@@ -1,3 +1,9 @@
+/**
+ * @file
+ *
+ * Allows the system to confidently categorize different entities within JSON data.
+ */
+
 export const XA_TYPES = {
     OBJECT: 'object',
     ARRAY: 'array',
