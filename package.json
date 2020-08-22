@@ -1,6 +1,8 @@
 {
     "name": "xalgo-rule-processor",
-    "version": "0.0.6",
+    "author": "Ryan Fleck <Ryan.Fleck@protonmail.com> (https://ryanfleck.ca)",
+    "website": "https://xalgo-rule-processor.netlify.app",
+    "version": "0.0.7",
     "repository": {
         "url": "https://github.com/RyanFleck/Xalgorithms-Rule-Processor-Prototype"
     },
@@ -19,7 +21,6 @@
         "logging",
         "library"
     ],
-    "author": "Ryan Fleck",
     "license": "ISC",
     "dependencies": {
         "chalk": "^4.0.0"
