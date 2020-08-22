@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/RyanFleck/Xalgorithms-Rule-Processor-Prototype.svg?branch=master)](https://travis-ci.org/RyanFleck/Xalgorithms-Rule-Processor-Prototype)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ffd6f81d-346f-4a08-a406-85146eee4f56/deploy-status)](https://app.netlify.com/sites/xalgo-rule-processor/deploys)
 
 <br />
 
@@ -20,6 +21,8 @@ rule schema on blobs of JSON.
 This library is intended for use in both frontend and backend environments, in
 situations where XA rule processing is required.
 
+**Full documentation** can be found at <https://xalgo-rule-processor.netlify.app/>
+
 ### In Programs
 
 The package can be installed with Yarn or NPM:
@@ -34,7 +37,7 @@ import { prettyJSON, processRule } from 'xalgo-rule-processor';
 
 console.log(prettyJSON(theme));
 
-// This specific fuction is currently in developemnt.
+// This specific fuction is currently in development.
 processRule(rules, tables);
 ```
 
