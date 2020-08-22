@@ -1,8 +1,7 @@
-# Xalgorithms Rule Processor Prototype
+# Xalgorithms Rule Processor Functions
 
-[![Build Status](https://travis-ci.org/RyanFleck/Xalgorithms-Rule-Processor-Prototype.svg?branch=master)](https://travis-ci.org/RyanFleck/Xalgorithms-Rule-Processor-Prototype)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ffd6f81d-346f-4a08-a406-85146eee4f56/deploy-status)](https://app.netlify.com/sites/xalgo-rule-processor/deploys)
+
 
 <br />
 
@@ -58,6 +57,22 @@ npm publish
 ```
 
 <br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+# Notes & Incomplete Alpha Documentation
 
 ## A Minimal Example
 
