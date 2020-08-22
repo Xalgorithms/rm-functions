@@ -1,4 +1,13 @@
-import { enforceSchema, prettyJSON, pathifyJSON, E100, E101, E102 } from '../src';
+import {
+    enforceSchema,
+    checkSchema,
+    pathifyJSON,
+    E100,
+    E101,
+    E102,
+    E103,
+    E104,
+} from '../src';
 
 /**
  * Tests for enforceSchema
@@ -182,7 +191,6 @@ test('enforceSchema adds new keys to each row in a table.', () => {
     };
 
     const updatedContent = enforceSchema(schema, content);
-    // console.log(prettyJSON(updatedContent));
     [0, 1, 2].forEach((x) => {
         expect(updatedContent.c[x].d).toBe('');
         expect(updatedContent.c[x].e.a).toBe('');
@@ -239,7 +247,47 @@ test('enforceSchema does not add any info keys.', () => {
     expect(updatedContent.c[0].__a).toBe(undefined);
     expect(updatedContent.c[0].e.__a).toBe(undefined);
 });
+/**
+ * Tests for checkSchema
+ * ========================================================================
+ */
 
+test('checkSchema detects missing InfoKeys', () => {
+    const schema = {
+        a: 'Example of this thing.',
+        __a: 'Thing info',
+        b: 'Example of this thing.',
+    };
+
+    expect(() => checkSchema(schema)).toThrow(E103);
+});
+
+test('checkSchema detects deep missing InfoKeys', () => {
+    const schema = {
+        a: { b: { c: { d: 'No info on this one.' }, __c: 'c info' }, __b: 'B info' },
+        __a: 'a info',
+    };
+
+    expect(() => checkSchema(schema)).toThrow(E103);
+});
+
+test('checkSchema detects table schema with more than one defined object', () => {
+    const schema = {
+        a: [
+            {
+                b: 'This is a field',
+                __b: 'Field info',
+            },
+            {
+                c: 'This is a field',
+                __c: 'Field info',
+            },
+        ],
+        __a: 'A table',
+    };
+
+    expect(() => checkSchema(schema)).toThrow(E104);
+});
 /**
  * Tests for pathifyJSON
  * ========================================================================
@@ -374,8 +422,6 @@ test('Pathify grabs tables correctly, complex example.', () => {
     };
 
     const blob = pathifyJSON(document);
-    //console.log(JSON.stringify(blob, null, 2));
-
     expect(blob.values['customer.address.city']).toBe('Ottawa');
     expect(blob.values['business.brews']).toStrictEqual([
         'house lager',

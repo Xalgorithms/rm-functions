@@ -7,6 +7,8 @@ import {
     E100,
     E101,
     E102,
+    E103,
+    E104,
     deepCopy,
 } from '../src';
 
@@ -183,6 +185,54 @@ function _enforceSchemaAddNewFields(schema, content) {
     });
     return content;
 }
+
+/**
+ * ===========================================================================
+ *     Check Schema Function
+ * ===========================================================================
+ */
+
+/**
+ * Adds blank missing fields to a piece of content JSON, based on the fields present in the schema.
+ * Throws an error if a field that is NOT in the schema is present in the content blob.
+ *
+ * @param {JSON} schema A JSON blob containing a rule schema.
+ */
+export function checkSchema(schema) {
+    const allSchemaKeys = Object.keys(schema);
+    const schemaKeys = allSchemaKeys.filter(_isNotInfoKey);
+
+    // Every key must have a corresponding infoKey:
+    schemaKeys.forEach((key) => {
+        const infoKey = `__${key}`;
+        if (!allSchemaKeys.includes(infoKey)) {
+            throw E103 + `, missing InfoKey: ${infoKey}`;
+        }
+
+        if(isObject(schema[key])){
+            checkSchema(schema[key])
+        }
+        
+        // Arrays can contain values or objects, not both.
+        if (isArray(schema[key]) && schema[key].some(isObject) && schema[key].some(isValue))
+            throw E102;
+
+        if(isArray(schema[key]) && schema[key].every(isObject) && schema[key].length > 1)
+            throw E104;
+
+    });
+    
+
+    // Then, check for fields in the schema that need to be added to the content.
+    return _enforceSchemaAddNewFields(schema, newContent);
+}
+
+/**
+ * ===========================================================================
+ *     Schema Helper Functions
+ * ===========================================================================
+ */
+
 /**
  * Returns true if key does not start with double underscore, indicating an infoKey
  * @param {String} key
