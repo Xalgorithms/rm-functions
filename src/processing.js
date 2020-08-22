@@ -1,9 +1,3 @@
-/**
- * @file
- *
- * Provides functions for processing incoming JSON and enforcing JSON schema.
- */
-
 import {
     prettyJSON,
     isObject,

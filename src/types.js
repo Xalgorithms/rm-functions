@@ -1,9 +1,3 @@
-/**
- * @file
- *
- * Allows the system to confidently categorize different entities within JSON data.
- */
-
 export const XA_TYPES = {
     OBJECT: 'object',
     ARRAY: 'array',
@@ -45,6 +39,7 @@ export function isValue(x) {
  * Checks to see if the object is an XA table: an array with key-value JSON
  * objects. A table may not contain arrays or objects as table values.
  *
+ * @deprecated
  * @param {Object} x  Object to test.
  * @returns {Boolean}
  */
@@ -68,7 +63,8 @@ export function isTable(x) {
 /**
  * Returns the XA_TYPE enumeration of the input object.
  *
- * @param {Object} obj
+ * @param {Object} obj A JSON value.
+ * @returns {XA_TYPES} The enumerated type of the JSON value.
  */
 export function xaType(obj) {
     if (obj === null) return XA_TYPES.EMPTY;

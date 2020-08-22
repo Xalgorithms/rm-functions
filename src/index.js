@@ -1,6 +1,4 @@
 /**
- * @file
- *
  * The functions in this libary are organized by use case.
  *
  * The order they are exported in mirrors their typical organization in an alphabetized filesystem,

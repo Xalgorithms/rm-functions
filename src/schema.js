@@ -1,9 +1,3 @@
-/**
- * @file
- *
- * Contains the primary XA Rule schema, which will be enforced for all incoming and modified rules.
- */
-
 export const RuleSchema = {
     __metadata: 'Non-computational information about the creation and ownership of the rule',
     metadata: {

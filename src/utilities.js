@@ -1,10 +1,4 @@
 /**
- * @file
- *
- * Provides a selection of simple utilities for use in other methods.
- */
-
-/**
  * Returns a deep copy of a JSON object.
  * @param {JSON} obj The JSON object to replicate.
  */
