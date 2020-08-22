@@ -1,7 +1,10 @@
 import {
     enforceSchema,
+    enforceSchemaNoCheck,
+    enforceSchemaWithTables,
     checkSchema,
     pathifyJSON,
+    isArray,
     E100,
     E101,
     E102,
@@ -41,7 +44,7 @@ test('enforceSchema detects keys with incorrect values', () => {
         b: ["But I'll make it on my own"],
     };
 
-    expect(() => enforceSchema(schema, content, true)).toThrow(E101);
+    expect(() => enforceSchemaNoCheck(schema, content)).toThrow(E101);
 });
 
 test('enforceSchema detects embedded incorrect keys', () => {
@@ -61,7 +64,7 @@ test('enforceSchema detects embedded incorrect keys', () => {
         },
     };
 
-    expect(() => enforceSchema(schema, content, true)).toThrow(E100);
+    expect(() => enforceSchemaNoCheck(schema, content)).toThrow(E100);
 });
 
 test('enforceSchema detects embedded and tabular incorrect keys', () => {
@@ -89,7 +92,7 @@ test('enforceSchema detects embedded and tabular incorrect keys', () => {
         ],
     };
 
-    expect(() => enforceSchema(schema, content, true)).toThrow(E100);
+    expect(() => enforceSchemaNoCheck(schema, content)).toThrow(E100);
 });
 
 test('enforceSchema dislikes mixed arrays', () => {
@@ -107,7 +110,7 @@ test('enforceSchema dislikes mixed arrays', () => {
         b: ['Test', 'Things'],
     };
 
-    expect(() => enforceSchema(schema, content, true)).toThrow(E102);
+    expect(() => enforceSchemaNoCheck(schema, content)).toThrow(E102);
 });
 
 test('enforceSchema adds keys to the content', () => {
@@ -121,7 +124,7 @@ test('enforceSchema adds keys to the content', () => {
         a: "I'm a monster, not a hero",
     };
 
-    const updatedContent = enforceSchema(schema, content, true);
+    const updatedContent = enforceSchemaNoCheck(schema, content);
     expect(updatedContent.a).toBe(content.a);
     expect(updatedContent.b).toBe('');
     expect(updatedContent.c).toBe('');
@@ -144,7 +147,7 @@ test('enforceSchema adds keys within objects to the content', () => {
         c: 'Thrice',
     };
 
-    const updatedContent = enforceSchema(schema, content, true);
+    const updatedContent = enforceSchemaNoCheck(schema, content);
     expect(updatedContent.a.b).toBe('');
     expect(updatedContent.a.d.e.f).toBe('');
 });
@@ -190,7 +193,7 @@ test('enforceSchema adds new keys to each row in a table.', () => {
         ],
     };
 
-    const updatedContent = enforceSchema(schema, content, true);
+    const updatedContent = enforceSchemaNoCheck(schema, content);
     [0, 1, 2].forEach((x) => {
         expect(updatedContent.c[x].d).toBe('');
         expect(updatedContent.c[x].e.a).toBe('');
@@ -237,16 +240,61 @@ test('enforceSchema does not add any info keys.', () => {
             {
                 a: 'Event',
                 b: 'Detail',
-                c: ['neato', 'burrito'],
             },
         ],
     };
 
-    const updatedContent = enforceSchema(schema, content, true);
+    const updatedContent = enforceSchemaNoCheck(schema, content);
     expect(updatedContent.__a).toBe(undefined);
     expect(updatedContent.c[0].__a).toBe(undefined);
     expect(updatedContent.c[0].e.__a).toBe(undefined);
 });
+
+test('enforceSchema populates empty tables.', () => {
+    const schema = {
+        a: 'Topic',
+        __a: 'Param a info',
+        b: 'Date',
+        __b: 'Param b info',
+        c: [
+            {
+                a: 'Event',
+                __a: 'Param a info',
+                b: 'Detail',
+                __b: 'Param b info',
+                c: ['neato', 'burrito'],
+                __c: 'Param c info',
+                d: "Can't touch this.",
+                __d: 'Param d info',
+                e: {
+                    a: 'look',
+                    __a: 'Param a info',
+                    b: 'a sub-object',
+                    __b: 'Param b info',
+                    c: 'how cool',
+                    __c: 'Param c info',
+                },
+            },
+        ],
+        __c: 'Param c info',
+        d: [{ a: 'Field content', __a: 'Field a info' }],
+        __d: 'Table d info',
+    };
+
+    const content = {
+        a: 'Topic',
+        b: 'Date',
+        c: [],
+    };
+
+    const updatedContent = enforceSchemaWithTables(schema, content);
+    expect(updatedContent.__a).toBe(undefined);
+    expect(updatedContent.c[0].a).toBe('');
+    expect(updatedContent.c[0].e.a).toBe('');
+    expect(updatedContent.d[0].a).toBe('');
+    expect(isArray(updatedContent.c[0].c)).toBe(true);
+});
+
 /**
  * Tests for checkSchema
  * ========================================================================

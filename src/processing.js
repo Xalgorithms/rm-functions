@@ -99,11 +99,37 @@ function _recurseAndAdd(key, path, value, blob) {
  * Adds blank missing fields to a piece of content JSON, based on the fields present in the schema.
  * Throws an error if a field that is NOT in the schema is present in the content blob.
  *
+ * Additionally, ignores schema enforcement.
+ *
+ * @param {JSON} schema A JSON blob containing the schema for the passed content
+ * @param {JSON} content A JSON blob to be modified to fit the passed schema
+ */
+export function enforceSchemaNoCheck(schema, content) {
+    return enforceSchema(schema, content, false, true);
+}
+
+/**
+ * Adds blank missing fields to a piece of content JSON, based on the fields present in the schema.
+ * Throws an error if a field that is NOT in the schema is present in the content blob.
+ *
+ * Additionally, adds an empty table row for any object-tables.
+ *
+ * @param {JSON} schema A JSON blob containing the schema for the passed content
+ * @param {JSON} content A JSON blob to be modified to fit the passed schema
+ */
+export function enforceSchemaWithTables(schema, content) {
+    return enforceSchema(schema, content, true, false);
+}
+
+/**
+ * Adds blank missing fields to a piece of content JSON, based on the fields present in the schema.
+ * Throws an error if a field that is NOT in the schema is present in the content blob.
+ *
  * @param {JSON} schema A JSON blob containing the schema for the passed content
  * @param {JSON} content A JSON blob to be modified to fit the passed schema
  * @param {boolean} skipSchemaCheck For development: skip checkSchema tests for test simplicity.
  */
-export function enforceSchema(schema, content, skipSchemaCheck = false) {
+export function enforceSchema(schema, content, addEmptyTableRows = false, skipSchemaCheck = false) {
     if (!skipSchemaCheck) checkSchema(schema);
 
     // Take a deep copy so we don't alter the original content object.
@@ -113,7 +139,7 @@ export function enforceSchema(schema, content, skipSchemaCheck = false) {
     _enforceSchemaCheckForIncorrectFields(schema, newContent);
 
     // Then, check for fields in the schema that need to be added to the content.
-    return _enforceSchemaAddNewFields(schema, newContent);
+    return _enforceSchemaAddNewFields(schema, newContent, addEmptyTableRows);
 }
 
 /**
@@ -156,7 +182,7 @@ function _enforceSchemaCheckForIncorrectFields(schema, content) {
  * @param {JSON} schema The schema JSON to observe.
  * @param {JSON} content The conent JSON to modify.
  */
-function _enforceSchemaAddNewFields(schema, content) {
+function _enforceSchemaAddNewFields(schema, content, addEmptyTableRows = false) {
     const schemaKeys = Object.keys(schema).filter(_isNotInfoKey);
     const contentKeys = Object.keys(content);
     schemaKeys.forEach((key) => {
@@ -171,7 +197,7 @@ function _enforceSchemaAddNewFields(schema, content) {
         // Objects
         if (isObject(schema[key])) {
             if (!contentKeys.includes(key)) content[key] = {};
-            content[key] = _enforceSchemaAddNewFields(schema[key], content[key]);
+            content[key] = _enforceSchemaAddNewFields(schema[key], content[key], addEmptyTableRows);
         }
 
         // Arrays of Objects
@@ -183,9 +209,26 @@ function _enforceSchemaAddNewFields(schema, content) {
                 const contentArray = content[key];
                 const arraySchema = schema[key][0];
                 for (let i = 0; i < contentArray.length; i++) {
-                    content[key][i] = _enforceSchemaAddNewFields(arraySchema, contentArray[i]);
+                    content[key][i] = _enforceSchemaAddNewFields(
+                        arraySchema,
+                        contentArray[i],
+                        addEmptyTableRows
+                    );
                 }
             }
+
+            // If the table is empty, add a key
+            if (addEmptyTableRows && content[key].length === 0) {
+                // Populate the row with an object if addEmptyTableRows is true.
+                content[key].push({});
+                _enforceSchemaAddNewFields(schema[key][0], content[key][0], addEmptyTableRows);
+            }
+        } else if (
+            // If the array is empty/full of values, add it.
+            isArray(schema[key]) &&
+            (schema[key].every(isValue) || schema[key].length === 0)
+        ) {
+            if (!contentKeys.includes(key)) content[key] = [];
         }
     });
     return content;
