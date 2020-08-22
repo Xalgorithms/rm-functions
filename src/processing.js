@@ -1,4 +1,20 @@
-import { prettyJSON, isObject, isArray, isValue, normalizeValue, E100, E101 } from '../src';
+import {
+    prettyJSON,
+    isObject,
+    isArray,
+    isValue,
+    normalizeValue,
+    E100,
+    E101,
+    E102,
+    deepCopy,
+} from '../src';
+
+/**
+ * ===========================================================================
+ *     Pathify JSON function.
+ * ===========================================================================
+ */
 
 /**
  * Takes a document and transforms nested objects into string paths.
@@ -71,8 +87,11 @@ function _recurseAndAdd(key, path, value, blob) {
     }
 }
 
-
-
+/**
+ * ===========================================================================
+ *     Enforce Schema Function
+ * ===========================================================================
+ */
 
 /**
  * Adds blank missing fields to a piece of content JSON, based on the fields present in the schema.
@@ -82,15 +101,21 @@ function _recurseAndAdd(key, path, value, blob) {
  * @param {JSON} content A JSON blob to be modified to fit the passed schema
  */
 export function enforceSchema(schema, content) {
+    const newContent = deepCopy(content);
     // First, check for fields in the content that are NOT present in the schema:
-    _enforceSchemaCheckMissingFields(schema, content);
+    _enforceSchemaCheckForIncorrectFields(schema, newContent);
 
     // Then, check for fields in the schema that need to be added to the content.
-    _enforceSchemaAddNewFields(schema, content);
+    return _enforceSchemaAddNewFields(schema, newContent);
 }
 
-function _enforceSchemaCheckMissingFields(schema, content) {
-    const schemaKeys = Object.keys(schema);
+/**
+ * Checks the content JSON for incorrect keys or keys with incorrect values.
+ * @param {JSON} schema The schema JSON to observe.
+ * @param {JSON} content The conent JSON to check.
+ */
+function _enforceSchemaCheckForIncorrectFields(schema, content) {
+    const schemaKeys = Object.keys(schema).filter(_isNotInfoKey);
     Object.keys(content).forEach((val) => {
         // If a key is present in the content that is not present in the schema, throw an error.
         if (!schemaKeys.includes(val)) throw E100;
@@ -100,16 +125,68 @@ function _enforceSchemaCheckMissingFields(schema, content) {
 
         // Recursive run for objects.
         if (isObject(content[val])) {
-            _enforceSchemaCheckMissingFields(content[val], schema[val]);
+            _enforceSchemaCheckForIncorrectFields(content[val], schema[val]);
         }
 
         // Recursive runs for arrays of objects.
         if (isArray(content[val]) && content[val].every(isObject)) {
             content[val].forEach((obj) => {
-                _enforceSchemaCheckMissingFields(schema[val][0], obj);
+                _enforceSchemaCheckForIncorrectFields(schema[val][0], obj);
             });
         }
+
+        // Arrays can contain values or objects, not both.
+        if (isArray(schema[val]) && schema[val].some(isObject) && schema[val].some(isValue))
+            throw E102;
+
+        if (isArray(content[val]) && content[val].some(isObject) && content[val].some(isValue))
+            throw E102;
     });
 }
 
-function _enforceSchemaAddNewFields(schema, content) {}
+/**
+ * Adds blank missing fields to all objects in the schema.
+ * @param {JSON} schema The schema JSON to observe.
+ * @param {JSON} content The conent JSON to modify.
+ */
+function _enforceSchemaAddNewFields(schema, content) {
+    const schemaKeys = Object.keys(schema).filter(_isNotInfoKey);
+    const contentKeys = Object.keys(content);
+    schemaKeys.forEach((key) => {
+        // Values
+        if (isValue(schema[key])) {
+            if (!contentKeys.includes(key)) {
+                // Include empty value.
+                content[key] = '';
+            }
+        }
+
+        // Objects
+        if (isObject(schema[key])) {
+            if (!contentKeys.includes(key)) content[key] = {};
+            content[key] = _enforceSchemaAddNewFields(schema[key], content[key]);
+        }
+
+        // Arrays of Objects
+        if (isArray(schema[key]) && schema[key].every(isObject)) {
+            if (!contentKeys.includes(key)) {
+                content[key] = [];
+            } else {
+                // Ensure every object in the table matches the schema's first entry.
+                const contentArray = content[key];
+                const arraySchema = schema[key][0];
+                for (let i = 0; i < contentArray.length; i++) {
+                    content[key][i] = _enforceSchemaAddNewFields(arraySchema, contentArray[i]);
+                }
+            }
+        }
+    });
+    return content;
+}
+/**
+ * Returns true if key does not start with double underscore, indicating an infoKey
+ * @param {String} key
+ */
+function _isNotInfoKey(key) {
+    return !key.startsWith('__');
+}

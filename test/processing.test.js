@@ -1,14 +1,16 @@
-import { enforceSchema, E100, E101 } from '../src';
-import { pathifyJSON } from '../src';
+import { enforceSchema, prettyJSON, pathifyJSON, E100, E101, E102 } from '../src';
 
 /**
  * Tests for enforceSchema
+ * ========================================================================
  */
 
 test('enforceSchema detects incorrect keys', () => {
     const schema = {
         a: 'Example of this thing.',
+        __a: 'Thing info',
         b: 'Example of this thing.',
+        __b: 'B thing info',
     };
 
     const content = {
@@ -81,6 +83,24 @@ test('enforceSchema detects embedded and tabular incorrect keys', () => {
     expect(() => enforceSchema(schema, content)).toThrow(E100);
 });
 
+test('enforceSchema dislikes mixed arrays', () => {
+    const schema = {
+        b: [
+            'Value',
+            {
+                c: 'Example of this thing.',
+                d: 'Example of this thing.',
+            },
+        ],
+    };
+
+    const content = {
+        b: ['Test', 'Things'],
+    };
+
+    expect(() => enforceSchema(schema, content)).toThrow(E102);
+});
+
 test('enforceSchema adds keys to the content', () => {
     const schema = {
         a: 'Example of this thing.',
@@ -93,15 +113,136 @@ test('enforceSchema adds keys to the content', () => {
     };
 
     const updatedContent = enforceSchema(schema, content);
-    /*
     expect(updatedContent.a).toBe(content.a);
     expect(updatedContent.b).toBe('');
     expect(updatedContent.c).toBe('');
-    */
+});
+
+test('enforceSchema adds keys within objects to the content', () => {
+    const schema = {
+        c: 'Test',
+        a: {
+            b: 'Neato',
+            d: {
+                e: {
+                    f: 'Burrito',
+                },
+            },
+        },
+    };
+
+    const content = {
+        c: 'Thrice',
+    };
+
+    const updatedContent = enforceSchema(schema, content);
+    expect(updatedContent.a.b).toBe('');
+    expect(updatedContent.a.d.e.f).toBe('');
+});
+
+test('enforceSchema adds new keys to each row in a table.', () => {
+    const schema = {
+        a: 'Topic',
+        b: 'Date',
+        c: [
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+                d: "Can't touch this.",
+                e: {
+                    a: 'look',
+                    b: 'a sub-object',
+                    c: 'how cool',
+                },
+            },
+        ],
+    };
+
+    const content = {
+        a: 'Topic',
+        b: 'Date',
+        c: [
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+        ],
+    };
+
+    const updatedContent = enforceSchema(schema, content);
+    // console.log(prettyJSON(updatedContent));
+    [0, 1, 2].forEach((x) => {
+        expect(updatedContent.c[x].d).toBe('');
+        expect(updatedContent.c[x].e.a).toBe('');
+    });
+});
+
+test('enforceSchema does not add any info keys.', () => {
+    const schema = {
+        a: 'Topic',
+        __a: 'Param a info',
+        b: 'Date',
+        c: [
+            {
+                a: 'Event',
+                __a: 'Param a info',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+                __a: 'Param a info',
+                d: "Can't touch this.",
+                e: {
+                    a: 'look',
+                    __a: 'Param a info',
+                    b: 'a sub-object',
+                    c: 'how cool',
+                },
+            },
+        ],
+    };
+
+    const content = {
+        a: 'Topic',
+        b: 'Date',
+        c: [
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+            {
+                a: 'Event',
+                b: 'Detail',
+                c: ['neato', 'burrito'],
+            },
+        ],
+    };
+
+    const updatedContent = enforceSchema(schema, content);
+    expect(updatedContent.__a).toBe(undefined);
+    expect(updatedContent.c[0].__a).toBe(undefined);
+    expect(updatedContent.c[0].e.__a).toBe(undefined);
 });
 
 /**
  * Tests for pathifyJSON
+ * ========================================================================
  */
 
 test('Pathify sets variable correctly.', () => {
