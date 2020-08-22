@@ -101,9 +101,14 @@ function _recurseAndAdd(key, path, value, blob) {
  *
  * @param {JSON} schema A JSON blob containing the schema for the passed content
  * @param {JSON} content A JSON blob to be modified to fit the passed schema
+ * @param {boolean} skipSchemaCheck For development: skip checkSchema tests for test simplicity.
  */
-export function enforceSchema(schema, content) {
+export function enforceSchema(schema, content, skipSchemaCheck = false) {
+    if (!skipSchemaCheck) checkSchema(schema);
+
+    // Take a deep copy so we don't alter the original content object.
     const newContent = deepCopy(content);
+
     // First, check for fields in the content that are NOT present in the schema:
     _enforceSchemaCheckForIncorrectFields(schema, newContent);
 
@@ -209,22 +214,17 @@ export function checkSchema(schema) {
             throw E103 + `, missing InfoKey: ${infoKey}`;
         }
 
-        if(isObject(schema[key])){
-            checkSchema(schema[key])
+        if (isObject(schema[key])) {
+            checkSchema(schema[key]);
         }
-        
+
         // Arrays can contain values or objects, not both.
         if (isArray(schema[key]) && schema[key].some(isObject) && schema[key].some(isValue))
             throw E102;
 
-        if(isArray(schema[key]) && schema[key].every(isObject) && schema[key].length > 1)
+        if (isArray(schema[key]) && schema[key].every(isObject) && schema[key].length > 1)
             throw E104;
-
     });
-    
-
-    // Then, check for fields in the schema that need to be added to the content.
-    return _enforceSchemaAddNewFields(schema, newContent);
 }
 
 /**

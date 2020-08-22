@@ -41,7 +41,7 @@ test('enforceSchema detects keys with incorrect values', () => {
         b: ["But I'll make it on my own"],
     };
 
-    expect(() => enforceSchema(schema, content)).toThrow(E101);
+    expect(() => enforceSchema(schema, content, true)).toThrow(E101);
 });
 
 test('enforceSchema detects embedded incorrect keys', () => {
@@ -61,7 +61,7 @@ test('enforceSchema detects embedded incorrect keys', () => {
         },
     };
 
-    expect(() => enforceSchema(schema, content)).toThrow(E100);
+    expect(() => enforceSchema(schema, content, true)).toThrow(E100);
 });
 
 test('enforceSchema detects embedded and tabular incorrect keys', () => {
@@ -89,7 +89,7 @@ test('enforceSchema detects embedded and tabular incorrect keys', () => {
         ],
     };
 
-    expect(() => enforceSchema(schema, content)).toThrow(E100);
+    expect(() => enforceSchema(schema, content, true)).toThrow(E100);
 });
 
 test('enforceSchema dislikes mixed arrays', () => {
@@ -107,7 +107,7 @@ test('enforceSchema dislikes mixed arrays', () => {
         b: ['Test', 'Things'],
     };
 
-    expect(() => enforceSchema(schema, content)).toThrow(E102);
+    expect(() => enforceSchema(schema, content, true)).toThrow(E102);
 });
 
 test('enforceSchema adds keys to the content', () => {
@@ -121,7 +121,7 @@ test('enforceSchema adds keys to the content', () => {
         a: "I'm a monster, not a hero",
     };
 
-    const updatedContent = enforceSchema(schema, content);
+    const updatedContent = enforceSchema(schema, content, true);
     expect(updatedContent.a).toBe(content.a);
     expect(updatedContent.b).toBe('');
     expect(updatedContent.c).toBe('');
@@ -144,7 +144,7 @@ test('enforceSchema adds keys within objects to the content', () => {
         c: 'Thrice',
     };
 
-    const updatedContent = enforceSchema(schema, content);
+    const updatedContent = enforceSchema(schema, content, true);
     expect(updatedContent.a.b).toBe('');
     expect(updatedContent.a.d.e.f).toBe('');
 });
@@ -190,7 +190,7 @@ test('enforceSchema adds new keys to each row in a table.', () => {
         ],
     };
 
-    const updatedContent = enforceSchema(schema, content);
+    const updatedContent = enforceSchema(schema, content, true);
     [0, 1, 2].forEach((x) => {
         expect(updatedContent.c[x].d).toBe('');
         expect(updatedContent.c[x].e.a).toBe('');
@@ -242,7 +242,7 @@ test('enforceSchema does not add any info keys.', () => {
         ],
     };
 
-    const updatedContent = enforceSchema(schema, content);
+    const updatedContent = enforceSchema(schema, content, true);
     expect(updatedContent.__a).toBe(undefined);
     expect(updatedContent.c[0].__a).toBe(undefined);
     expect(updatedContent.c[0].e.__a).toBe(undefined);
