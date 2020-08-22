@@ -3,10 +3,21 @@ export const RuleSchema = {
     metadata: {
         __rule: 'Information about the rule',
         rule: {
-            title: 'Sample Rule',
+            title: 'Simple Rule',
             __title: 'The title of the rule',
-            authors: ['Ryan Fleck', 'Calvin Hutcheon', 'Karfai', 'Joseph Potvin'],
-            __authors: 'An array of plaintext author information',
+            description: 'This is a simple rule that determines the required xyz for a given abc.',
+            __description: 'A brief description of the rule',
+            __authors: 'An array of author information, including name and contact info',
+            authors: [
+                {
+                    name: 'Ryan Fleck',
+                    __name: "The authors's full plaintext name",
+                    email: 'Ryan.Fleck@protonmail.com',
+                    __email: "The author's email address",
+                    solid_profile: 'https://ryanfleck.solid.community/profile/card#me',
+                    __solid_profile: 'Full address to personal solid profile',
+                },
+            ],
         },
     },
 };
