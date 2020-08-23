@@ -1,8 +1,8 @@
 export const XA_TYPES = {
-    OBJECT: 'object',
-    ARRAY: 'array',
-    VALUE: 'value',
-    EMPTY: 'empty',
+  OBJECT: 'object',
+  ARRAY: 'array',
+  VALUE: 'value',
+  EMPTY: 'empty',
 };
 
 /**
@@ -12,7 +12,7 @@ export const XA_TYPES = {
  * @returns {Boolean}
  */
 export function isObject(x) {
-    return xaType(x) === XA_TYPES.OBJECT;
+  return xaType(x) === XA_TYPES.OBJECT;
 }
 
 /**
@@ -22,7 +22,7 @@ export function isObject(x) {
  * @returns {Boolean}
  */
 export function isArray(x) {
-    return xaType(x) == XA_TYPES.ARRAY;
+  return xaType(x) == XA_TYPES.ARRAY;
 }
 
 /**
@@ -32,7 +32,7 @@ export function isArray(x) {
  * @returns {Boolean}
  */
 export function isValue(x) {
-    return xaType(x) == XA_TYPES.VALUE;
+  return xaType(x) == XA_TYPES.VALUE;
 }
 
 /**
@@ -44,20 +44,20 @@ export function isValue(x) {
  * @returns {Boolean}
  */
 export function isTable(x) {
-    // Table must be an array.
-    if (!isArray(x)) return false;
+  // Table must be an array.
+  if (!isArray(x)) return false;
 
-    // Table must contain only objects.
-    if (!x.every(isObject)) return false;
+  // Table must contain only objects.
+  if (!x.every(isObject)) return false;
 
-    // Table objects must all be key-value pairs.
-    for (const item of x) {
-        for (const value of Object.values(item)) {
-            if (!isValue(value)) return false;
-        }
+  // Table objects must all be key-value pairs.
+  for (const item of x) {
+    for (const value of Object.values(item)) {
+      if (!isValue(value)) return false;
     }
+  }
 
-    return true;
+  return true;
 }
 
 /**
@@ -67,12 +67,12 @@ export function isTable(x) {
  * @returns {XA_TYPES} The enumerated type of the JSON value.
  */
 export function xaType(obj) {
-    if (obj === null) return XA_TYPES.EMPTY;
-    if (typeof obj === 'object') {
-        if (Array.isArray(obj)) {
-            return XA_TYPES.ARRAY;
-        }
-        return XA_TYPES.OBJECT;
+  if (obj === null) return XA_TYPES.EMPTY;
+  if (typeof obj === 'object') {
+    if (Array.isArray(obj)) {
+      return XA_TYPES.ARRAY;
     }
-    return XA_TYPES.VALUE;
+    return XA_TYPES.OBJECT;
+  }
+  return XA_TYPES.VALUE;
 }

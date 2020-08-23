@@ -3,14 +3,14 @@
  * @param {JSON} obj The JSON object to replicate.
  */
 export function deepCopy(obj) {
-    return JSON.parse(JSON.stringify(obj));
+  return JSON.parse(JSON.stringify(obj));
 }
 
 export function objectEmpty(obj) {
-    const type = typeof obj;
-    if (!obj) return true; // If null, return true;
-    if (type !== 'object') return true; // If not an object, it's 'empty'.
-    return Object.keys(obj).length === 0;
+  const type = typeof obj;
+  if (!obj) return true; // If null, return true;
+  if (type !== 'object') return true; // If not an object, it's 'empty'.
+  return Object.keys(obj).length === 0;
 }
 
 /* ============================================================================= */
@@ -22,7 +22,7 @@ export function objectEmpty(obj) {
  * @returns {String} Pretty-printed JSON string.
  */
 export function prettyJSON(x) {
-    return JSON.stringify(x, null, 2);
+  return JSON.stringify(x, null, 2);
 }
 
 /**
@@ -30,14 +30,14 @@ export function prettyJSON(x) {
  * @param {Object} val A String or Number
  */
 export function normalizeValue(val) {
-    // Float?
-    const float = parseFloat(val);
-    if (!isNaN(float)) return float;
+  // Float?
+  const float = parseFloat(val);
+  if (!isNaN(float)) return float;
 
-    // Int?
-    const int = parseInt(val);
-    if (!isNaN(int)) return int;
+  // Int?
+  const int = parseInt(val);
+  if (!isNaN(int)) return int;
 
-    // String.
-    return val;
+  // String.
+  return val;
 }
