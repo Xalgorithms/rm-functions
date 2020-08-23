@@ -202,7 +202,7 @@ function _enforceSchemaAddNewFields(schema, content, addEmptyTableRows = false) 
     }
 
     // Arrays of Objects
-    if (isArray(schema[key]) && schema[key].every(isObject)) {
+    if (isArray(schema[key]) && schema[key].every(isObject) && schema[key].length === 1) {
       if (!contentKeys.includes(key)) {
         content[key] = [];
       } else {
@@ -254,13 +254,9 @@ export function checkSchema(schema) {
   // Every key must have a corresponding infoKey:
   schemaKeys.forEach((key) => {
     const infoKey = `__${key}`;
-    if (!allSchemaKeys.includes(infoKey)) {
-      throw E103 + `, missing InfoKey: ${infoKey}`;
-    }
-
-    if (isObject(schema[key])) {
-      checkSchema(schema[key]);
-    }
+    if (!allSchemaKeys.includes(infoKey)) throw E103 + `, missing InfoKey: ${infoKey}`;
+    if (!isValue(schema[infoKey])) throw 'InfoKeys can only be values.';
+    if (isObject(schema[key])) checkSchema(schema[key]);
 
     // Arrays can contain values or objects, not both.
     if (isArray(schema[key]) && schema[key].some(isObject) && schema[key].some(isValue)) throw E102;
