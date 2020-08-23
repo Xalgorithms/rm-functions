@@ -1,7 +1,8 @@
 # Xalgorithms Rule Processor Functions
 
+![Unit Tests](https://github.com/Xalgorithms/rm-functions/workflows/Unit%20Tests/badge.svg)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1143bc97-ed94-4769-93a2-58b8ca5479f0/deploy-status)](https://app.netlify.com/sites/rm-functions/deploys)
 
 <br />
 
@@ -20,7 +21,7 @@ rule schema on blobs of JSON.
 This library is intended for use in both frontend and backend environments, in
 situations where XA rule processing is required.
 
-**Full documentation** can be found at <https://xalgo-rule-processor.netlify.app/>
+**Full documentation** can be found at <https://rm-functions.netlify.app/>
 
 ### In Programs
 
