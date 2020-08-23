@@ -1,0 +1,17 @@
+name: Unit Tests
+
+on: push
+
+jobs:
+    jest:
+        name: Jest
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+
+            - name: Install Packages
+              run: yarn install
+
+            - name: Run Jest Unit Tests
+              run: yarn test
