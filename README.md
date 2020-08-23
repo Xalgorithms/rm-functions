@@ -21,7 +21,7 @@ rule schema on blobs of JSON.
 This library is intended for use in both frontend and backend environments, in
 situations where XA rule processing is required.
 
-**Full documentation** can be found at <https://rm-components.netlify.app/>
+**Full documentation** can be found at <https://rm-functions.netlify.app/>
 
 ### In Programs
 
