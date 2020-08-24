@@ -5,6 +5,7 @@ import {
   deepCopy,
   prettyJSON,
 } from '../src';
+import { enforceSchema } from './processing';
 
 /**
  * Generates a new rule, taking care to add presets where necessary.
@@ -58,5 +59,53 @@ export function addNewCase(ruleInput) {
     return condition;
   });
 
+  return rule;
+}
+
+/**
+ * Adds an input condition to the rule body.
+ * @param {JSON} ruleInput
+ */
+export function addNewInputCondition(ruleInput) {
+  const rule = deepCopy(ruleInput);
+  const currentCases = rule.input_conditions[0].cases.length;
+
+  // Get the schema for cases.
+  const ICCaseFormat = enforceSchemaWithTables(RuleSchema.input_conditions[0].cases[0], {});
+
+  // Get the schema for input_conditions/output_assertions
+  let ICFormat = enforceSchema(RuleSchema.input_conditions[0], {});
+
+  for (let i = 0; i < currentCases; i++) {
+    const c = deepCopy(ICCaseFormat);
+    c.case = generateCaseValue(i);
+    ICFormat.cases.push(c);
+  }
+
+  rule.input_conditions.push(deepCopy(ICFormat));
+  return rule;
+}
+
+/**
+ * Adds a new output assertion to the rule body.
+ * @param {JSON} ruleInput
+ */
+export function addNewOutputAssertion(ruleInput) {
+  const rule = deepCopy(ruleInput);
+  const currentCases = rule.input_conditions[0].cases.length;
+
+  // Get the schema for cases.
+  const OACaseFormat = enforceSchemaWithTables(RuleSchema.output_assertions[0].cases[0], {});
+
+  // Get the schema for input_conditions/output_assertions
+  const OAFormat = enforceSchema(RuleSchema.output_assertions[0], {});
+
+  for (let i = 0; i < currentCases; i++) {
+    const c = deepCopy(OACaseFormat);
+    c.case = generateCaseValue(i);
+    OAFormat.cases.push(c);
+  }
+
+  rule.output_assertions.push(deepCopy(OAFormat));
   return rule;
 }
