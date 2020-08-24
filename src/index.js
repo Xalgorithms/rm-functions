@@ -8,6 +8,7 @@
 export * from './exceptions.js';
 // index.js will appear in this location on the filesystem.
 export * from './processing.js';
+export * from './rule.js';
 export * from './schema.js';
 export * from './types.js';
 export * from './utilities.js';
