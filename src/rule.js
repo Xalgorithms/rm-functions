@@ -68,7 +68,8 @@ export function addNewCase(ruleInput) {
  */
 export function addNewInputCondition(ruleInput) {
   const rule = deepCopy(ruleInput);
-  const currentCases = rule.input_conditions[0].cases.length;
+  const currentCases =
+    rule.input_conditions[0].cases.length || rule.output_assertions[0].cases.length || 1;
 
   // Get the schema for cases.
   const ICCaseFormat = enforceSchemaWithTables(RuleSchema.input_conditions[0].cases[0], {});
@@ -92,7 +93,8 @@ export function addNewInputCondition(ruleInput) {
  */
 export function addNewOutputAssertion(ruleInput) {
   const rule = deepCopy(ruleInput);
-  const currentCases = rule.input_conditions[0].cases.length;
+  const currentCases =
+    rule.input_conditions[0].cases.length || rule.output_assertions[0].cases.length || 1;
 
   // Get the schema for cases.
   const OACaseFormat = enforceSchemaWithTables(RuleSchema.output_assertions[0].cases[0], {});
