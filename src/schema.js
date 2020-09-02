@@ -16,11 +16,47 @@ export const RuleSchema = {
     __rule: 'Information about the rule',
     rule: {
       title: 'Simple Rule Title',
-      __title: 'The title of the rule',
+      __title: 'The title of the rule (max 120 characters)',
       description: 'This is a simple rule that determines the required xyz for a given abc.',
-      __description: 'A brief description of the rule',
+      __description: 'A short summary of the rule (max 240 characters)',
       __authors: 'An array of author information, including name and contact info',
+      entity: [
+        {
+          name: 'First Last',
+          __name: "The authors's full plaintext name",
+          email: 'first.last@domain.country',
+          __email: "The author's email address",
+          solid_profile: 'https://firstlast.solid.community/profile/card#me',
+          __solid_profile: 'Full address to personal solid profile',
+          role: 'Maintainer',
+          __role: "The author's role. Can be author, maintainer, etc.",
+        },
+      ],
       authors: [
+        {
+          name: 'First Last',
+          __name: "The authors's full plaintext name",
+          email: 'first.last@domain.country',
+          __email: "The author's email address",
+          solid_profile: 'https://firstlast.solid.community/profile/card#me',
+          __solid_profile: 'Full address to personal solid profile',
+          role: 'Maintainer',
+          __role: "The author's role. Can be author, maintainer, etc.",
+        },
+      ],
+      manager: [
+        {
+          name: 'First Last',
+          __name: "The authors's full plaintext name",
+          email: 'first.last@domain.country',
+          __email: "The author's email address",
+          solid_profile: 'https://firstlast.solid.community/profile/card#me',
+          __solid_profile: 'Full address to personal solid profile',
+          role: 'Maintainer',
+          __role: "The author's role. Can be author, maintainer, etc.",
+        },
+      ],
+      maintainer: [
         {
           name: 'First Last',
           __name: "The authors's full plaintext name",
