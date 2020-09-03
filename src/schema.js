@@ -118,9 +118,9 @@ export const RuleSchema = {
     __jurisdiction: 'What is the jurisdiction of the organization or person declaring this to be a rule?',
     jurisdiction: [
       {
-        country: 'Marketopia',
+        country: 'Canada',
         __country: 'What is the country jurisdiction of the organization or person declaring this to be a rule?',
-        subcountry: 'Marketania',
+        subcountry: 'Ontario',
         __subcountry: 'What is the state/province/territory/region jurisdiction (one level below the country) of the organization or person declaring this to be a rule?',
       },
     ],
