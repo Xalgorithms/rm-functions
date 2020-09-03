@@ -19,6 +19,11 @@ export const RuleSchema = {
       __title: 'The title of the rule (max 120 characters)',
       description: 'This is a simple rule that determines the required xyz for a given abc.',
       __description: 'A short summary of the rule (max 240 characters)',
+      version: '1.0',
+      __version: 'Each rule author or maintainer is responsible for version management based on the ‘Semver’ industry convention.',
+      criticality: 'Experimental',
+      __criticality: 'Choose: experimental, in effect or archived',
+
       __entity: 'An array of entity information, including name and url',
       entity: [
         {
@@ -101,6 +106,50 @@ export const RuleSchema = {
       },
     ],
   },
+  __input_sources: "Origins of Data that this rule depends upon",
+  input_sources: [
+    {
+      parameter: '', // need feedback for this section
+      __parameter: '',
+    },
+  ],
+  __input_context: 'Where is this rule asserted to be in effect',
+  input_context: {
+    __jurisdiction: 'What is the jurisdiction of the organization or person declaring this to be a rule?',
+    jurisdiction: [
+      {
+        country: 'Marketopia',
+        __country: 'What is the country jurisdiction of the organization or person declaring this to be a rule?',
+        subcountry: 'Marketania',
+        __subcountry: 'What is the state/province/territory/region jurisdiction (one level below the country) of the organization or person declaring this to be a rule?',
+      },
+    ],
+    timezone: 'UTC-12:00',
+    __timezone: 'The start and finish times are given for what time zone? (dropdown list of UTC  time zones)',
+  },
+  __input_filters: 'External data values for which this rule is deemed to be applicable',
+  input_filters: {
+    __standard_role_name: '',// need feedback for this section
+    standard_role_name: [
+      {
+        standard_industry_name: '',
+        __standard_industry_name: '',
+        isic_industry_code: '',
+        __isic_industry_code: '',
+        isic_industry_name: '',
+        __isic_industry_name: '',
+      },
+    ],
+    __involved_product_service: '',
+    involved_product_service: [
+      {
+        unspsc_name: '',
+        __unspsc_name: '',
+        unspsc_code: '',
+        __unspsc_code: '',
+      },
+    ],
+  },
   __input_conditions: 'The set of conditions that will be applied to the input information.',
   input_conditions: [
     {
@@ -156,6 +205,30 @@ export const RuleSchema = {
       ],
     },
   ],
+  __output_weight: 'Rulemaker ranking of rule weight',
+  output_weight: {
+    __character_of_obligation: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    character_of_obligation: 0,
+    __enforcement_measures: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    enforcement_measures: 0,
+    __consequences: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    consequences: 0,
+  },
+  __output_purpose: 'Output attributes that characterize this rule',
+  output_purpose: {
+      responsibility: '',
+      __responsibility: 'Who has responsibility for conformance?',
+      normative_verb: '',
+      __normative_verb: 'What is the primary normative (deontic; modal) verb?',
+      modal_verb: '',
+      __modal_verb: 'Is the primary modal verb stated in the affirmative; negative or as a question?',
+      action_verb: '',
+      __action_verb: 'What is the primary action verb?',
+      philosophical_rationale: '',
+      __philosophical_rationale: 'What is the principal type of philosophical rationale for this rule?',
+      implementation: '',
+      __implementation: 'Is this a directly implemented rule, a desription of a rule to be conformed with, or an empirical fact about a rule?',
+  },
   __standards: 'The set of standards that fields will conform to.',
   standards: [
     {
