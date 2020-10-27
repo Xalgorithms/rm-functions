@@ -152,14 +152,20 @@ function _enforceSchemaCheckForIncorrectFields(schema, content) {
   const schemaKeys = Object.keys(schema).filter(_isNotInfoKey);
   Object.keys(content).forEach((val) => {
     // If a key is present in the content that is not present in the schema, throw an error.
-    if (!schemaKeys.includes(val)) throw E100;
+    if (!schemaKeys.includes(val)) throw E100 + ` -> ${val}`;
 
     // If a key is a different type than specified in the schema, throw an error.
-    if (typeof content[val] !== typeof schema[val]) throw E101;
+    if (typeof content[val] !== typeof schema[val])
+      throw (
+        E101 +
+        ` -> ${val} (${content[val]}) has type ${typeof content[val]} instead of ${typeof schema[
+          val
+        ]}`
+      );
 
     // Recursive run for objects.
     if (isObject(content[val])) {
-      _enforceSchemaCheckForIncorrectFields(content[val], schema[val]);
+      _enforceSchemaCheckForIncorrectFields(schema[val], content[val]);
     }
 
     // Recursive runs for arrays of objects.
@@ -173,7 +179,7 @@ function _enforceSchemaCheckForIncorrectFields(schema, content) {
     if (isArray(schema[val]) && schema[val].some(isObject) && schema[val].some(isValue)) throw E102;
 
     if (isArray(content[val]) && content[val].some(isObject) && content[val].some(isValue))
-      throw E102;
+      throw E102 + ` -> ${val}`;
   });
 }
 
@@ -191,7 +197,11 @@ function _enforceSchemaAddNewFields(schema, content, addEmptyTableRows = false) 
     if (isValue(schema[key])) {
       if (!contentKeys.includes(key)) {
         // Include empty value.
-        content[key] = '';
+        if (typeof schema[key] === 'number') {
+          content[key] = 0;
+        } else {
+          content[key] = '';
+        }
       }
     }
 

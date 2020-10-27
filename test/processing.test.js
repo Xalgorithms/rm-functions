@@ -10,6 +10,8 @@ import {
   E102,
   E103,
   E104,
+  generateNewRule,
+  RuleSchema,
 } from '../src';
 
 /**
@@ -293,6 +295,12 @@ test('enforceSchema populates empty tables.', () => {
   expect(updatedContent.c[0].e.a).toBe('');
   expect(updatedContent.d[0].a).toBe('');
   expect(isArray(updatedContent.c[0].c)).toBe(true);
+});
+
+test('enforceSchema populates empty rule with all required fields.', () => {
+  const content = generateNewRule();
+  // This should not throw any errors.
+  const updatedContent = enforceSchemaWithTables(RuleSchema, content);
 });
 
 /**
