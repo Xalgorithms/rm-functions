@@ -20,7 +20,8 @@ export const RuleSchema = {
       description: 'This is a simple rule that determines the required xyz for a given abc.',
       __description: 'A short summary of the rule (max 240 characters)',
       version: '1.0',
-      __version: 'Each rule author or maintainer is responsible for version management based on the ‘Semver’ industry convention.',
+      __version:
+        'Each rule author or maintainer is responsible for version management based on the ‘Semver’ industry convention.',
       criticality: 'Experimental',
       __criticality: 'Choose: experimental, in effect or archived',
 
@@ -28,9 +29,11 @@ export const RuleSchema = {
       entity: [
         {
           name: 'My Organization',
-          __name: "What is the official name of the organization or person declaring this to be a rule?",
+          __name:
+            'What is the official name of the organization or person declaring this to be a rule?',
           url: 'www.myorganization.com',
-          __url: "Please supply a Web link to a page that describes the organization or person which is declaring this to be a rule.",
+          __url:
+            'Please supply a Web link to a page that describes the organization or person which is declaring this to be a rule.',
           id: 'https://firstlast.solid.community/profile/card#me',
           __id: 'Full address to personal solid profile',
         },
@@ -39,7 +42,8 @@ export const RuleSchema = {
       authors: [
         {
           name: 'First Last',
-          __name: "The 'author' of a rule is considered to be the person most directly responsible for how this rules is expressed in Xalgo",
+          __name:
+            "The 'author' of a rule is considered to be the person most directly responsible for how this rules is expressed in Xalgo",
           email: 'first.last@domain.country',
           __email: "The author's email address",
           solid_profile: 'https://firstlast.solid.community/profile/card#me',
@@ -52,9 +56,11 @@ export const RuleSchema = {
       maintainers: [
         {
           name: 'Firstname LastName',
-          __name: 'The maintainer of a rule is considered to be the person most recently edited it in Xalgo',
+          __name:
+            'The maintainer of a rule is considered to be the person most recently edited it in Xalgo',
           id: 'Rule Maintainer ID',
-          __id: 'This is automatically assigned https://github.com/Xalgorithms/xalgorm_rule-maker/issues/9',
+          __id:
+            'This is automatically assigned https://github.com/Xalgorithms/xalgorm_rule-maker/issues/9',
           email: 'hello@world.com',
           __email: 'Please supply an email address for the maintainer of this rule.',
         },
@@ -63,9 +69,11 @@ export const RuleSchema = {
       manager: [
         {
           name: 'Firstname LastName',
-          __name: 'The manager of a rule is considered to be the person most directly responsible for what this rule asserts.',
+          __name:
+            'The manager of a rule is considered to be the person most directly responsible for what this rule asserts.',
           id: 'Rule Manager ID',
-          __id: 'This is automatically assigned https://github.com/Xalgorithms/xalgorm_rule-maker/issues/9',
+          __id:
+            'This is automatically assigned https://github.com/Xalgorithms/xalgorm_rule-maker/issues/9',
           email: 'hello@world.com',
           __email: 'Please supply an email address for the manager of this rule.',
         },
@@ -106,7 +114,7 @@ export const RuleSchema = {
       },
     ],
   },
-  __input_sources: "Origins of Data that this rule depends upon",
+  __input_sources: 'Origins of Data that this rule depends upon',
   input_sources: [
     {
       parameter: '', // need feedback for this section
@@ -115,21 +123,25 @@ export const RuleSchema = {
   ],
   __input_context: 'Where is this rule asserted to be in effect',
   input_context: {
-    __jurisdiction: 'What is the jurisdiction of the organization or person declaring this to be a rule?',
+    __jurisdiction:
+      'What is the jurisdiction of the organization or person declaring this to be a rule?',
     jurisdiction: [
       {
         country: 'Canada',
-        __country: 'What is the country jurisdiction of the organization or person declaring this to be a rule?',
+        __country:
+          'What is the country jurisdiction of the organization or person declaring this to be a rule?',
         subcountry: 'Ontario',
-        __subcountry: 'What is the state/province/territory/region jurisdiction (one level below the country) of the organization or person declaring this to be a rule?',
+        __subcountry:
+          'What is the state/province/territory/region jurisdiction (one level below the country) of the organization or person declaring this to be a rule?',
       },
     ],
     timezone: 'UTC-12:00',
-    __timezone: 'The start and finish times are given for what time zone? (dropdown list of UTC  time zones)',
+    __timezone:
+      'The start and finish times are given for what time zone? (dropdown list of UTC  time zones)',
   },
   __input_filters: 'External data values for which this rule is deemed to be applicable',
   input_filters: {
-    __standard_role_name: '',// need feedback for this section
+    __standard_role_name: '', // need feedback for this section
     standard_role_name: [
       {
         standard_industry_name: '',
@@ -207,27 +219,34 @@ export const RuleSchema = {
   ],
   __output_weight: 'Rulemaker ranking of rule weight',
   output_weight: {
-    __character_of_obligation: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    __rule_group: 'General category to infer the legal weight of the rule',
+    rule_group: 'Guideline, Instruction, or Policy',
+    __character_of_obligation:
+      'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
     character_of_obligation: 0,
-    __enforcement_measures: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    __enforcement_measures:
+      'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
     enforcement_measures: 0,
-    __consequences: 'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
+    __consequences:
+      'This is weighted up to 99 out of 100. The ruletaker always holds the determing weight of 100.',
     consequences: 0,
   },
   __output_purpose: 'Output attributes that characterize this rule',
   output_purpose: {
-      responsibility: '',
-      __responsibility: 'Who has responsibility for conformance?',
-      normative_verb: '',
-      __normative_verb: 'What is the primary normative (deontic; modal) verb?',
-      modal_verb: '',
-      __modal_verb: 'Is the primary modal verb stated in the affirmative; negative or as a question?',
-      action_verb: '',
-      __action_verb: 'What is the primary action verb?',
-      philosophical_rationale: '',
-      __philosophical_rationale: 'What is the principal type of philosophical rationale for this rule?',
-      implementation: '',
-      __implementation: 'Is this a directly implemented rule, a desription of a rule to be conformed with, or an empirical fact about a rule?',
+    responsibility: '',
+    __responsibility: 'Who has responsibility for conformance?',
+    normative_verb: '',
+    __normative_verb: 'What is the primary normative (deontic; modal) verb?',
+    modal_verb: '',
+    __modal_verb: 'Is the primary modal verb stated in the affirmative; negative or as a question?',
+    action_verb: '',
+    __action_verb: 'What is the primary action verb?',
+    philosophical_rationale: '',
+    __philosophical_rationale:
+      'What is the principal type of philosophical rationale for this rule?',
+    implementation: '',
+    __implementation:
+      'Is this a directly implemented rule, a desription of a rule to be conformed with, or an empirical fact about a rule?',
   },
   __standards: 'The set of standards that fields will conform to.',
   standards: [
