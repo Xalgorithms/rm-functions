@@ -11,6 +11,7 @@ import {
   E104,
   deepCopy,
 } from '../src';
+import { xaType } from './types';
 
 /**
  * ===========================================================================
@@ -155,7 +156,7 @@ function _enforceSchemaCheckForIncorrectFields(schema, content) {
     if (!schemaKeys.includes(val)) throw E100 + ` -> ${val}`;
 
     // If a key is a different type than specified in the schema, throw an error.
-    if (typeof content[val] !== typeof schema[val])
+    if (xaType(content[val]) !== xaType(schema[val]))
       throw (
         E101 +
         ` -> ${val} (${content[val]}) has type ${typeof content[val]} instead of ${typeof schema[
