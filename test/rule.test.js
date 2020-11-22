@@ -36,3 +36,25 @@ test('Ensure new input conditions are added correctly.', () => {
   expect(oneMore.input_conditions[2].cases[2].case).toBe('C');
   expect(oneMore.output_assertions[1].cases[2].case).toBe('C');
 });
+
+test('Do not skip deleted rows.', () => {
+  const newRule = addNewCase(addNewCase(generateNewRule()));
+
+  const twoConditions = addNewInputCondition(newRule);
+  const threeConditions = addNewInputCondition(twoConditions);
+
+  threeConditions.input_conditions = threeConditions.input_conditions.map((ic) => {
+    ic.cases = ic.cases.filter((x) => x.case.toUpperCase() !== 'B');
+    return ic;
+  });
+  threeConditions.output_assertions = threeConditions.output_assertions.map((ic) => {
+    ic.cases = ic.cases.filter((x) => x.case.toUpperCase() !== 'B');
+    return ic;
+  });
+
+  const oneMore = addNewCase(threeConditions);
+
+  console.log(prettyJSON(oneMore));
+
+  expect(oneMore.input_conditions[2].cases[2].case).toBe('B');
+});
