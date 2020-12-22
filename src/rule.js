@@ -28,16 +28,44 @@ export function generateNewRule() {
  * @returns The modified rule JSON.
  */
 export function addNewCase(ruleInput) {
+  console.log('Adding new case to rule...');
   const rule = deepCopy(ruleInput);
+  const currentCases =
+    rule.input_conditions[0].cases.length || rule.output_assertions[0].cases.length || 1;
 
   // Get the schema for cases.
   const ICCaseFormat = enforceSchemaWithTables(RuleSchema.input_conditions[0].cases[0], {});
   const OACaseFormat = enforceSchemaWithTables(RuleSchema.output_assertions[0].cases[0], {});
 
+  let newCaseNumber = 0;
+  let looking_for_unused_id = true;
+  let newCaseID = generateCaseValue(newCaseNumber).toUpperCase();
+  while (looking_for_unused_id) {
+    // Check if in current cases.
+    console.log(`Checking for letter ${newCaseID} in rule.`);
+    if (
+      ruleInput.input_conditions.some((row) => {
+        return row.cases.some((c) => {
+          return c.case === newCaseID;
+        });
+      }) ||
+      ruleInput.output_assertions.some((row) => {
+        return row.cases.some((c) => {
+          return c.case === newCaseID;
+        });
+      })
+    ) {
+      // The letter is already in the cases.
+      newCaseNumber++;
+      newCaseID = generateCaseValue(newCaseNumber).toUpperCase();
+    } else {
+      // The letter is not present, add this.
+      looking_for_unused_id = false;
+    }
+  }
+
+  console.log(`Adding new case '${newCaseID}' to rule.`);
   // Get correct parameters from first case of input_conditions.
-  const currentCases = rule.input_conditions[0].cases.length;
-  const newCaseNumber = currentCases;
-  const newCaseID = generateCaseValue(newCaseNumber);
   ICCaseFormat.case = newCaseID;
   OACaseFormat.case = newCaseID;
 

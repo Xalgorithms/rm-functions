@@ -11,12 +11,18 @@
 export const RuleSchema = {
   path: 'ior://domain.company.division.focus.rule-name',
   __path: 'The storage location for the rule.',
+  uuid: '8d548f6b-b575-4f21-8b38-9174d53730b4',
+  __uuid: 'The UUID within the location for the rule.',
   __metadata: 'Non-computational information about the creation and ownership of the rule',
   metadata: {
     __rule: 'Information about the rule',
     rule: {
       title: 'Simple Rule Title',
       __title: 'The title of the rule (max 120 characters)',
+      content_uuid: '8d548f6b-b575-4f21-8b38-9174d53730b4',
+      __content_uuid: 'The content UUID for this version of the rule.',
+      url: 'https://www.country.gov/law/abce/defg',
+      __url: 'The URL pointing towards the full text of the rule.',
       description: 'This is a simple rule that determines the required xyz for a given abc.',
       __description: 'A short summary of the rule (max 240 characters)',
       version: '1.0',
