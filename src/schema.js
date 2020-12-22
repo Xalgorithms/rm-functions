@@ -22,9 +22,10 @@ export const RuleSchema = {
       version: '1.0',
       __version:
         'Each rule author or maintainer is responsible for version management based on the ‘Semver’ industry convention.',
+      xa_version: '1.0',
+      __xa_version: 'The Xalgorithms rule runner compatibility version.',
       criticality: 'Experimental',
       __criticality: 'Choose: experimental, in effect or archived',
-
       __entity: 'An array of entity information, including name and url',
       entity: [
         {
